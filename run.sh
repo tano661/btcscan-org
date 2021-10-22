@@ -9,7 +9,7 @@ SYNC_SECRET=$4
 SYNC_SOURCE=$5
 
 if [ -z "$FLAVOR" ] || [ ! -d /srv/explorer/static/$FLAVOR ]; then
-    echo "Please provide bitcoin-testnet, bitcoin-mainnet, bitcoin-regtest, liquid-mainnet or liquid-regtest as a parameter"
+    echo "Please provide bitcoin-testnet, bitcoin-mainnet, bitcoin-mainnet-blockstream, bitcoin-mainnet-btcscan, bitcoin-regtest, liquid-mainnet or liquid-regtest as a parameter"
     echo "For example run.sh bitcoin-mainnet explorer"
     exit 1
 fi
@@ -112,6 +112,10 @@ if [ "$TEMPLATE" == "blockstream" ]; then
   # the backtick subshell below is injected into electrs.runit as a literal string,
   # which is evaluated later when the runit service is run.
   ELECTRS_ARGS=$ELECTRS_ARGS' --electrum-public-hosts "`cat '$d'/electrum-hosts-'$DAEMON'-'$NETWORK'.json || echo {}`" --electrum-banner "`cat '$d'/electrum-banner.txt`"'
+fi
+
+if [ "$TEMPLATE" == "btcscan" ]; then
+  d=/srv/explorer/source/flavors/btcscan
 fi
 
 function preprocess(){
