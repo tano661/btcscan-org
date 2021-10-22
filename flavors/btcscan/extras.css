@@ -1,0 +1,48 @@
+@import "style.css";
+
+.navbar-brand::before {
+  background: url(img/btcscan_dark.png);
+  background-size: contain;
+  width: 240px;
+  margin: 0;
+  background-repeat: no-repeat;
+}
+
+.footer-logo::before {
+  width: 220px;
+  height: 93px;
+  background-image: url(img/btcscan_dark.png);
+  background-size: 100%;
+  content: ' ';
+  display: block;
+}
+.footer-logo {
+  margin-right: 0px;
+}
+.footer-links {
+  margin-top: 5px;
+}
+.theme-light .footer-logo::before {
+  background-image: url(img/btcscan_light.png);
+}
+
+@media only screen and (max-width: 1000px) {
+  .footer-logo::before {
+    width: 200px;
+    height: 83px;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .footer-logo::before {
+    margin-top: 30px;
+  }
+
+  .navbar-brand::before {
+    background: url(img/btcscan_mobile.png);
+    background-size: 54px 54px;
+    width: 54px;
+  }
+}
+
+
