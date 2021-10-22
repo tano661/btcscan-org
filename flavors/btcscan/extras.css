@@ -1,10 +1,239 @@
 @import "style.css";
 
+/* btcscan styles */
+
+body.theme-dark {
+  background-color: #151F45;
+}
+
+a, a:link, a:visited, a:hover, a:focus {
+  color: #5389D0;
+}
+
+.toggle-container .burger-icon span {
+  background: #fff;
+}
+
+.toggle-container .toggle-menu {
+  border: 1px solid #19365B;
+  box-shadow: -8px 5px 15px rgba(1, 9, 44, 0.35);
+  background: #131D45;
+}
+
+.search-bar .search-bar-submit {
+  background-color: #16335F;
+}
+
+.prev-next-blocks-btns > div a > div {
+  background-color: #18234A;
+}
+
+.blocks-table {
+  margin-top: -75px;
+}
+
+.blocks-table .blocks-table-row.header, .blocks-table .blocks-table-row.block-data {
+  border-top: 1px solid #173255;
+}
+
+.blocks-table .blocks-table-row.block-data {
+  border-top: 1px #173255 solid;
+}
+
+.blocks-table .blocks-table-row.block-data > * {
+  font-weight: bold;
+}
+
+.transactions-table {
+  margin-top: -75px;
+}
+
+.transactions-table .transactions-table-row.transaction-data {
+  border-top: 1px #173255 solid;
+}
+
+.highlighted-text {
+  color: #5389D0 !important;
+}
+
+.transaction-box {
+  box-shadow: 0 4px 12px rgb(86 114 222 / 15%);
+  background: #131D45;
+}
+
+.transaction-box > .ins-and-outs > .vins > div:not(.vin-loading), .transaction-box > .ins-and-outs .vouts > div:not(.vin-loading) {
+  background-color: #131D45;
+  border: 1px solid #404861;
+}
+
+.transaction-box > .ins-and-outs > .vins > div:not(.vin-loading) > .vin-body, .transaction-box > .ins-and-outs > .vins > div:not(.vin-loading) .vout-body, .transaction-box > .ins-and-outs .vouts > div:not(.vin-loading) > .vin-body, .transaction-box > .ins-and-outs .vouts > div:not(.vin-loading) .vout-body {
+  box-shadow: 0 4px 12px rgb(86 114 222 / 15%);
+  background: #131D45;
+}
+
+.language-selector, .language-submit {
+  background-color: #18234A;
+  border: 1px solid #E4E7F0;
+}
+
+.language-selector {
+  padding: 5px 10px 5px 10px;
+}
+
+.footer_container_content_copyright {
+  color: #fff;
+}
+
+.footer_container_content_copyright a {
+  color: #fff;
+}
+
+.footer_container_content_row_social-media_link {
+  border: 1px solid #fff;
+}
+
+.load-more, .load-more:link, .load-more:visited {
+  background-color: #18234A;
+}
+
+.sub-navbar {
+  background: url("img/background-nav.jpg");
+}
+
+.sub-nav-container {
+  padding: 85px 0;
+}
+
+.search-bar {
+  background-color: #131D45;
+  border: 1px solid #404861;
+}
+
+.search-bar-input {
+  outline: none;
+}
+
+.blocks-table, .transactions-table, .stats-table, .assets-table {
+  padding: 30px 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(86, 114, 222, 0.15);;
+  background: #131D45;
+}
+
+.blocks-table span {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 23px;
+}
+
+h3.table-title {
+  font-weight: 600;
+  font-size: 28px;
+  margin: 10px 40px 30px 26px;
+}
+
+.dash-container .tx-container {
+  background-color: #16335F;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 23px;
+  min-height: 40px;
+  margin-top: 145px;
+}
+
+.dash-container .view-more {
+  background: #16335F;
+  border-radius: 2px;
+  padding: 7px 0;
+}
+
+.dash-container .view-more div {
+  display: flex;
+  align-items: center;
+}
+
+.blocks-table .blocks-table-row > div:nth-child(1) {
+  padding-left: 0;
+}
+
+.explorer-container > .footer {
+  background-image: url("img/background-footer.png");
+  border-top: none;
+}
+
+.language-selector option {
+  background-color: #18234A;
+}
+
+@media only screen and (max-width: 990px) {
+  .blocks-table {
+    margin-top: 0;
+  }
+
+  .transactions-table {
+    margin-top: 0;
+  }
+
+  .sub-nav-container {
+    padding: 20px;
+  }
+
+  .dash-container .tx-container {
+    margin-top: 50px;
+  }
+}
+
+/* light theme */
+
+.theme-light .toggle-container .burger-icon span {
+  background: #222B4F;
+}
+
+.theme-light .sub-nav a {
+  color: #ffffff;
+}
+
+.theme-light .blocks-table {
+  background-color: #ffffff;
+}
+
+.theme-light .blocks-table .blocks-table-row.header, .theme-light .blocks-table .blocks-table-row.block-data {
+  border-color: #E4E7F0;
+}
+
+.theme-light .dash-container .view-more {
+  background: #EDF3FA;
+}
+
+.theme-light .blocks-table, .theme-light .transactions-table, .theme-light .stats-table, .theme-light .assets-table {
+  background-color: #ffffff;
+}
+
+.theme-light .footer_container_content_row_social-media_link {
+  background-color: transparent;
+  border: 1px solid #FFFFFF;
+}
+
+.theme-light .language-selector, .theme-light .language-submit {
+  background-color: transparent;
+}
+
+.theme-light .footer_container_content_row_onion_link {
+  color: #ffffff !important;
+}
+
+/* extra styles */
 .navbar-brand::before {
-  background: url(img/btcscan_dark.png);
+  background: url(img/icons/btcscan-dark.svg);
   background-size: contain;
-  width: 240px;
+  width: 400px;
   margin: 0;
+  background-repeat: no-repeat;
+}
+
+.theme-light .navbar-brand::before {
+  background: url(img/icons/btcscan-light.svg);
+  width: 400px;
   background-repeat: no-repeat;
 }
 
@@ -22,6 +251,7 @@
 .footer-links {
   margin-top: 5px;
 }
+
 .theme-light .footer-logo::before {
   background-image: url(img/btcscan_light.png);
 }
@@ -39,6 +269,12 @@
   }
 
   .navbar-brand::before {
+    background: url(img/btcscan_mobile.png);
+    background-size: 54px 54px;
+    width: 54px;
+  }
+
+  .theme-light .navbar-brand::before {
     background: url(img/btcscan_mobile.png);
     background-size: 54px 54px;
     width: 54px;
