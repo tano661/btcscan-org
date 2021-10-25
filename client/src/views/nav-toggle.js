@@ -21,20 +21,12 @@ export default (t, theme, page) =>
         }
       </div>
       <div className="section1">
-        <h4 className="menu-title">Wallets</h4>
+        <h4 className="menu-title">Exchanges</h4>
         <div className="wallets-link">
-            <p>AQUA</p>
+            <p>Redot</p>
             <div>
-            <a href="https://apps.apple.com/app/id1500791973" target="_blank"><img src={`${staticRoot}img/icons/apple.png`} /><span>App Store</span></a>
-            </div>
-        </div>
-        <div className="wallets-link">
-            <p>Blockstream Green</p>
-            <div>
-              <a href="https://apps.apple.com/us/app/green-bitcoin-wallet/id1402243590" target="_blank"><img src={`${staticRoot}img/icons/apple.png`} /><span>App Store</span></a>
-              <a href="https://play.google.com/store/apps/details?id=com.greenaddress.greenbits_android_wallet" target="_blank"><img src={`${staticRoot}img/icons/google-play.png`} /><span>Google Play</span></a>
-              <a href="https://github.com/Blockstream/green_qt/releases/download/release_0.1.5/BlockstreamGreen-x86_64.AppImage"><img src={`${staticRoot}img/icons/linux.png`} /><span>Linux</span></a>
-              <a href="https://blockstream.com/green/" target="_blank">+4 more</a>
+              <a href="https://play.google.com/store/apps/details?id=com.redot.app" target="_blank"><img src={`${staticRoot}img/icons/google-play.png`} /><span>Google Play</span></a>
+              <a href="https://redot.com/" target="_blank"><img src={`${staticRoot}img/icons/web.png`} /><span>Web</span></a>
             </div>
         </div>
       </div>
@@ -43,12 +35,11 @@ export default (t, theme, page) =>
           <h4 className="menu-title">Explorers</h4>
           <ul>
             <li><a href="/" rel="external">Bitcoin</a></li>
-            <li><a href="/liquid/" rel="external">Liquid Network</a></li>
-            <li><a href="/testnet/" rel="external">Bitcoin Testnet</a></li>
+            <li><a href="https://ethscan.org/" rel="external">Ethereum 2</a></li>
           </ul>
           <h4 className="menu-title">Developer Tools</h4>
           <ul>
-            <li><a href="https://github.com/Blockstream/esplora/blob/master/API.md" target="_blank">API</a></li>
+            <li><a href="https://github.com/nobd/btcscan-org/blob/master/API.md" target="_blank">API</a></li>
             <li><a href="tx/push">Broadcast Transactions</a></li>
             <li> { hasCam ? <a href="scan-qr">Scan QR</a> : ""}</li>
             <li> { process.env.IS_ELEMENTS ? <a href={`asset/${nativeAssetId}`}>Pegs</a> : ""}</li>
@@ -57,24 +48,21 @@ export default (t, theme, page) =>
         <div className="link-list">
           <h4 className="menu-title">Other Products</h4>
           <ul>
-            <li><a href="https://blockstream.com/liquid/" target="_blank">Liquid Network</a></li>
-            <li><a href="https://blockstream.com/mining/" target="_blank">Blockstream Mining</a></li>
-            <li><a href="https://blockstream.com/amp/" target="_blank">Blockstream AMP</a></li>
-            <li><a href="https://blockstream.com/jade/" target="_blank">Blockstream Jade</a></li>
-            <li><a href="https://blockstream.com/satellite/" target="_blank">Blockstream Satellite</a></li>
-            <li><a href="https://blockstream.com/cryptofeed/" target="_blank">Crypto Data Feed</a></li>
-            <li><a href="https://blockstream.com/lightning/" target="_blank">c-lightning</a></li>
-            <li><a href="https://blockstream.com/elements/" target="_blank">Elements</a></li>
+            <li><a href="https://redot.com/" target="_blank">Redot Exchange</a></li>
+            <li><a href="https://redot.com/staking/" target="_blank">Redot Staking</a></li>
+            <li><a href="https://redot.com/custody/" target="_blank">Redot Custody</a></li>
+            <li><a href="https://redot.com/derivatives/" target="_blank">Redot Derivatives</a></li>
+            <li><a href="https://redot.com/trade/signup" target="_blank">Buy Crypto</a></li>
+            <li><a href="https://ethscan.org/" target="_blank">Ethereum 2</a></li>
           </ul>
         </div>
         <div className="link-list">
           <h4 className="menu-title">Useful Links</h4>
           <ul>
-            <li><a href="https://help.blockstream.com/hc/en-us" target="_blank">Help Center</a></li>
-            <li><a href="https://help.blockstream.com/hc/en-us/requests/new?ticket_form_id=8613" target="_blank">Submit a bug / request</a></li>
-            <li><a href="https://blockstream.com/press-releases/" target="_blank">Press</a></li>
-            <li><a href="https://blockstream.com/about/" target="_blank">About Blockstream</a></li>
-            <li><a href="https://blockstream.com/newsroom/" target="_blank">News</a></li>
+            <li><a href="https://redot.com/help/" target="_blank">Help Center</a></li>
+            <li><a href="https://redot.com/help/en-us/10-contact-us/10-how-can-i-submit-a-support-request" target="_blank">Submit a bug / request</a></li>
+            <li><a href="https://redot.com/about-us/" target="_blank">About Redot</a></li>
+            <li><a href="https://redot.com/blog/" target="_blank">Insights</a></li>
           </ul>
         </div>
       </div>
