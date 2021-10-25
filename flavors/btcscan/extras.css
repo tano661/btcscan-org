@@ -40,10 +40,6 @@ a, a:link, a:visited, a:hover, a:focus {
   border-top: 1px #173255 solid;
 }
 
-.blocks-table .blocks-table-row.block-data > * {
-  font-weight: bold;
-}
-
 .transactions-table {
   margin-top: -75px;
 }
@@ -133,8 +129,6 @@ h3.table-title {
 }
 
 .dash-container .tx-container {
-  background-color: #16335F;
-  font-weight: 600;
   font-size: 18px;
   line-height: 23px;
   min-height: 40px;
@@ -183,6 +177,28 @@ h3.table-title {
   }
 }
 
+.arrow-prev {
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.arrow-next {
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.main-nav li a {
+  white-space: nowrap;
+}
+
+.transactions-table-link-row:nth-child(odd) {
+  background: #162355;
+}
+
+.blocks-table-link-row:nth-child(odd) {
+  background: #162355;
+}
+
 /* light theme */
 
 .theme-light .toggle-container .burger-icon span {
@@ -220,6 +236,14 @@ h3.table-title {
 
 .theme-light .footer_container_content_row_onion_link {
   color: #ffffff !important;
+}
+
+.theme-light .details-btn > div {
+  color: #000000;
+}
+
+.theme-light .transaction-box > .footer > div:nth-child(3) {
+  color: #09c3ff;
 }
 
 /* extra styles */
