@@ -1,4 +1,4 @@
-# Btcscan.org HTTP API
+# [Btcscan.org](https://btcscan.org) HTTP API
 
 JSON over RESTful HTTP. Amounts are always represented in satoshis.
 
