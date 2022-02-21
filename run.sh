@@ -49,16 +49,11 @@ NGINX_REWRITE_NOJS='return 301 " /nojs$uri"'
 NGINX_CSP="default-src 'self'; script-src 'self' 'unsafe-eval'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'"
 
 if [ "${DAEMON}" != "liquid" ]; then
-    if [ "${NETWORK}" == "testnet" ]; then
-        NGINX_PATH="testnet/"
-        NGINX_NOSLASH_PATH="testnet"
-        NGINX_REWRITE='rewrite ^/testnet(/.*)$ $1 break;'
-        NGINX_REWRITE_NOJS='rewrite ^/testnet(/.*)$ " /testnet/nojs$1?" permanent'
-    elif [ "${NETWORK}" == "regtest" ]; then
-        NGINX_PATH="regtest/"
-        NGINX_NOSLASH_PATH="regtest"
-        NGINX_REWRITE='rewrite ^/regtest(/.*)$ $1 break;'
-        NGINX_REWRITE_NOJS='rewrite ^/regtest(/.*)$ " /regtest/nojs$1?" permanent'
+    if [ "$NETWORK" == "testnet" ] || [ "$NETWORK" == "signet" ] || [ "$NETWORK" == "regtest" ]; then
+        NGINX_PATH="$NETWORK/"
+        NGINX_NOSLASH_PATH="$NETWORK"
+        NGINX_REWRITE='rewrite ^/'$NETWORK'(/.*)$ $1 break;'
+        NGINX_REWRITE_NOJS='rewrite ^/'$NETWORK'(/.*)$ " /'$NETWORK'/nojs$1?" permanent'
     fi
 else
     if [ "${NETWORK}" == "regtest" ]; then
@@ -68,6 +63,21 @@ else
         NGINX_REWRITE='rewrite ^/liquidregtest(/.*)$ $1 break;'
         NGINX_REWRITE_NOJS='rewrite ^/liquidregtest(/.*)$ " /liquidregtest/nojs$1?" permanent'
         NGINX_NOSLASH_PATH="liquidregtest"
+
+	# The --jsonrpc-import works around electrs not yet being aware of the magic number change for liquid regtest in elements 21.
+        ELECTRS_ARGS="$ELECTRS_ARGS --jsonrpc-import"
+    elif [ "${NETWORK}" == "testnet" ]; then
+        ELECTRS_NETWORK="liquidtestnet"
+        PARENT_NETWORK="--parent-network regtest"
+        NGINX_PATH="liquidtestnet/"
+        NGINX_REWRITE='rewrite ^/liquidtestnet(/.*)$ $1 break;'
+        NGINX_REWRITE_NOJS='rewrite ^/liquidtestnet(/.*)$ " /liquidtestnet/nojs$1?" permanent'
+        NGINX_NOSLASH_PATH="liquidtestnet"
+
+        # The --jsonrpc-import works around electrs not yet being aware of the magic number change for liquid testnet
+        ELECTRS_ARGS="$ELECTRS_ARGS --jsonrpc-import --asset-db-path /srv/liquid-assets-db"
+        ASSETS_GIT=${ASSETS_GIT:-https://github.com/Blockstream/asset_registry_testnet_db}
+        ASSETS_GPG=${ASSETS_GPG:-/srv/explorer/source/contrib/asset_registry_testnet_pubkey.asc}
     else
         ELECTRS_NETWORK="liquid"
         PARENT_NETWORK="--parent-network mainnet"
@@ -162,18 +172,22 @@ fi
 
 preprocess /srv/explorer/source/contrib/${DAEMON}-${NETWORK}-${MODE}.conf.in /data/.${DAEMON}.conf
 
-if [ "$DAEMON-$NETWORK" == "liquid-mainnet" ]; then
-    mkdir -p /etc/service/bitcoin/log /etc/service/liquid-assets-poller/log /data/logs/bitcoin /data/logs/poller
+if [ "$DAEMON" == "liquid" ]; then
+    if [ "$NETWORK" == "mainnet" ]; then
+        mkdir -p /etc/service/bitcoin/log /data/logs/bitcoin
+        preprocess /srv/explorer/source/contrib/bitcoin-mainnet-pruned-for-liquid.conf.in /data/.bitcoin.conf
+        cp /srv/explorer/source/contrib/runits/bitcoin_for_liquid.runit /etc/service/bitcoin/run
+        cp /srv/explorer/source/contrib/runits/bitcoin_for_liquid-log.runit /etc/service/bitcoin/log/run
+        cp /srv/explorer/source/contrib/runits/bitcoin_for_liquid-log-config.runit /data/logs/bitcoin/config
+    fi
 
-    preprocess /srv/explorer/source/contrib/bitcoin-mainnet-pruned-for-liquid.conf.in /data/.bitcoin.conf
-    cp /srv/explorer/source/contrib/runits/bitcoin_for_liquid.runit /etc/service/bitcoin/run
-    cp /srv/explorer/source/contrib/runits/bitcoin_for_liquid-log.runit /etc/service/bitcoin/log/run
-    cp /srv/explorer/source/contrib/runits/bitcoin_for_liquid-log-config.runit /data/logs/bitcoin/config
-
-    preprocess /srv/explorer/source/contrib/runits/liquid-assets-poller.runit /etc/service/liquid-assets-poller/run
-    cp /srv/explorer/source/contrib/runits/liquid-assets-poller-log.runit /etc/service/liquid-assets-poller/log/run
-    cp /srv/explorer/source/contrib/runits/liquid-assets-poller-log-config.runit /data/logs/poller/config
-    chmod +x /etc/service/liquid-assets-poller/run
+    if [ "$NETWORK" == "mainnet" ] || [ "$NETWORK" == "testnet" ]; then
+        mkdir -p /etc/service/liquid-assets-poller/log /data/logs/poller
+        preprocess /srv/explorer/source/contrib/runits/liquid-assets-poller.runit /etc/service/liquid-assets-poller/run
+        cp /srv/explorer/source/contrib/runits/liquid-assets-poller-log.runit /etc/service/liquid-assets-poller/log/run
+        cp /srv/explorer/source/contrib/runits/liquid-assets-poller-log-config.runit /data/logs/poller/config
+        chmod +x /etc/service/liquid-assets-poller/run
+    fi
 fi
 
 if [ -f /data/public_nodes ]; then
@@ -188,18 +202,11 @@ TORRCFILE="/srv/explorer/source/contrib/${DAEMON}-${NETWORK}-${MODE}-torrc"
 if [ -f $TORRCFILE ]; then
     cp $TORRCFILE /etc/tor/torrc
 
-    # torv2 being phased out, prefer v3
-    if [ ${TOR_VERSION:-v2} == "v3" ]; then
-        TOR_DIR=${TOR_DIR:-/dev/shm/tor}
-        # pick random peers from a file (for private-bridge using torv3)
-        cp ${TOR_DIR}/torv3rc /etc/tor/torrc
-        shuf -n 4 ${TOR_DIR}/torv3_connect > /etc/tor/torv3_connect
-        tail -4 /etc/tor/torv3_connect | awk -F: '{print "connect="$1".onion:10100"}' >> /data/.${DAEMON}.conf
-    elif [ -f /data/torrc ]; then
-        # pick for random peers from the list (for private-bridge)
-        shuf -n 4 /data/torrc >> /etc/tor/torrc
-        tail -4 /etc/tor/torrc | awk '{print "connect="$2":10100"}' >> /data/.${DAEMON}.conf
-    fi
+    TOR_DIR=${TOR_DIR:-/dev/shm/tor}
+    # pick random peers from a file (for private-bridge using torv3)
+    cp ${TOR_DIR}/torv3rc /etc/tor/torrc
+    shuf -n 4 ${TOR_DIR}/torv3_connect > /etc/tor/torv3_connect
+    tail -4 /etc/tor/torv3_connect | awk -F: '{print "connect="$1".onion:10100"}' >> /data/.${DAEMON}.conf
 else
     echo "ControlPort 9051" >> /etc/tor/torrc
 fi
@@ -209,7 +216,6 @@ sed -i 's/user www-data;/user root;/' /etc/nginx/nginx.conf
 
 # Make mempool contents available over nginx, protected with SYNC_SECRET
 if [ -n "$SYNC_SECRET" ]; then
-    #echo "$SYNC_SECRET" | htpasswd -c -i /srv/explorer/htpasswd sync
     echo "sync:{PLAIN}$SYNC_SECRET" > /srv/explorer/htpasswd
     preprocess /srv/explorer/source/contrib/nginx-sync.conf.in /tmp/nginx-sync.conf
     # insert nginx-sync.conf inside the server {} block
@@ -255,29 +261,30 @@ if [ "${NETWORK}" == "regtest" ]; then
     else
         /srv/explorer/$DAEMON/bin/${DAEMON}d -conf=/data/.$DAEMON.conf -datadir=/data/$DAEMON -daemon
     fi
+    echo "Creating default wallet"
+    cli -rpcwait loadwallet default || cli createwallet default
     address=$(cli -rpcwait getnewaddress)
     cli generatetoaddress 100 ${address}
     cli stop
 fi
 
-# Sync mempool contents from SYNC_SOURCE
+# Sync mempool and feeestimation contents from SYNC_SOURCE
 if [ -n "$SYNC_SOURCE" ]; then
   # wait for bitcoind to fully sync up,
-  if [ "${DAEMON}" == "liquid" ]; then
-    if [ "${NETWORK}" != "regtest" ]; then
-      /srv/explorer/bitcoin/bin/bitcoind -conf=/data/.bitcoin.conf -datadir=/data/bitcoin -daemon
-      /srv/explorer/source/contrib/bitcoind-wait-sync.sh cli_bitcoin
-    fi
+  if [ "${DAEMON}-${NETWORK}" == "liquid-mainnet" ]; then
+    /srv/explorer/bitcoin/bin/bitcoind -conf=/data/.bitcoin.conf -datadir=/data/bitcoin -daemon
+    /srv/explorer/source/contrib/bitcoind-wait-sync.sh cli_bitcoin
   fi
   /srv/explorer/$DAEMON/bin/${DAEMON}d -conf=/data/.$DAEMON.conf -datadir=/data/$DAEMON -daemon
   /srv/explorer/source/contrib/bitcoind-wait-sync.sh cli
   # stop it,
   cli stop
-  if [ "${DAEMON}" == "liquid" ]; then
+  if [ "${DAEMON}-${NETWORK}" == "liquid-mainnet" ]; then
     cli_bitcoin stop
   fi
   # then fetch a recent mempool.dat,
-  curl -f -s -u sync:$SYNC_SECRET -o $DAEMON_DIR/mempool.dat $SYNC_SOURCE || true
+  curl -f -s -u sync:$SYNC_SECRET -o $DAEMON_DIR/mempool.dat $SYNC_SOURCE/mempool || true
+  curl -f -s -u sync:$SYNC_SECRET -o $DAEMON_DIR/fee_estimates.dat $SYNC_SOURCE/fee_estimates || true
   # and let the runit services take over
 fi
 
