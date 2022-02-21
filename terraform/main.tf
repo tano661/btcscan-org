@@ -2,9 +2,8 @@ terraform {
   required_version = "> 0.13.0"
 
   required_providers {
-    google      = "~> 3.44.0"
-    google-beta = "~> 3.44.0"
-    null        = "= 2.1"
+    google      = "~> 3.89.0"
+    google-beta = "~> 3.89.0"
   }
 
   backend "gcs" {
@@ -103,21 +102,6 @@ module "bitcoin-testnet" {
   create_resources = local.create_bitcoin_testnet
 }
 
-module "bitcoin-testnet-http" {
-  source = "./modules/http-tor"
-
-  regions                  = [var.regions[0]]
-  name                     = "bitcoin-testnet"
-  network                  = "testnet"
-  project                  = var.project
-  service_account_prom     = terraform.workspace == "main" ? module.prometheus.service_account : data.terraform_remote_state.main.outputs.prometheus_service_account
-  docker_tag_node_exporter = var.docker_tag_node_exporter
-  docker_tag_nginx         = var.docker_tag_nginx
-  ssl_certs                = var.ssl_certs
-
-  create_resources = local.create_bitcoin_testnet
-}
-
 module "bitcoin-mainnet" {
   source = "./modules/daemon"
 
@@ -139,21 +123,6 @@ module "bitcoin-mainnet" {
   min_ready_sec               = var.min_ready_sec
   initial_delay_sec           = var.initial_delay_sec
   image_source_project        = var.image_source_project
-
-  create_resources = local.create_bitcoin_mainnet
-}
-
-module "bitcoin-mainnet-http" {
-  source = "./modules/http-tor"
-
-  regions                  = [var.regions[0]]
-  name                     = "bitcoin-mainnet"
-  network                  = "mainnet"
-  project                  = var.project
-  service_account_prom     = terraform.workspace == "main" ? module.prometheus.service_account : data.terraform_remote_state.main.outputs.prometheus_service_account
-  docker_tag_node_exporter = var.docker_tag_node_exporter
-  docker_tag_nginx         = var.docker_tag_nginx
-  ssl_certs                = var.ssl_certs
 
   create_resources = local.create_bitcoin_mainnet
 }
@@ -183,21 +152,6 @@ module "liquid-mainnet" {
   create_resources = local.create_liquid_mainnet
 }
 
-module "liquid-mainnet-http" {
-  source = "./modules/http-tor"
-
-  regions                  = [var.regions[0]]
-  name                     = "liquid-mainnet"
-  network                  = "mainnet"
-  project                  = var.project
-  service_account_prom     = terraform.workspace == "main" ? module.prometheus.service_account : data.terraform_remote_state.main.outputs.prometheus_service_account
-  docker_tag_node_exporter = var.docker_tag_node_exporter
-  docker_tag_nginx         = var.docker_tag_nginx
-  ssl_certs                = var.ssl_certs
-
-  create_resources = local.create_liquid_mainnet
-}
-
 module "liquid-testnet" {
   source = "./modules/daemon"
 
@@ -219,21 +173,6 @@ module "liquid-testnet" {
   min_ready_sec               = var.min_ready_sec
   initial_delay_sec           = var.initial_delay_sec
   image_source_project        = var.image_source_project
-
-  create_resources = local.create_liquid_testnet
-}
-
-module "liquid-testnet-http" {
-  source = "./modules/http-tor"
-
-  regions                  = [var.regions[0]]
-  name                     = "liquid-testnet"
-  network                  = "testnet"
-  project                  = var.project
-  service_account_prom     = terraform.workspace == "main" ? module.prometheus.service_account : data.terraform_remote_state.main.outputs.prometheus_service_account
-  docker_tag_node_exporter = var.docker_tag_node_exporter
-  docker_tag_nginx         = var.docker_tag_nginx
-  ssl_certs                = var.ssl_certs
 
   create_resources = local.create_liquid_testnet
 }

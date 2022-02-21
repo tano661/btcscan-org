@@ -59,7 +59,7 @@ build_staging:
     - /^staging_liquid_mainnet.*/
     - /^staging_liquid_testnet.*/
   script:
-    - docker pull debian:buster || true
+    - docker pull debian:bullseye || true
     - docker pull blockstream/esplora-base:latest || true
     - docker build --network=host --cache-from blockstream/esplora-base:latest -t blockstream/esplora-base:$CI_COMMIT_REF_SLUG -t blockstream/esplora-base:latest -f Dockerfile.deps .
     - docker push blockstream/esplora-base:$CI_COMMIT_REF_SLUG
@@ -87,7 +87,7 @@ build:
     - /^liquid_testnet.*/
     - master@greenaddress/esplora
   script:
-    - docker pull debian:buster || true
+    - docker pull debian:bullseye || true
     - docker pull blockstream/esplora-base:latest || true
     - docker build --network=host --cache-from blockstream/esplora-base:latest -t blockstream/esplora-base:$CI_COMMIT_REF_SLUG -t blockstream/esplora-base:latest -f Dockerfile.deps .
     - docker push blockstream/esplora-base:latest
@@ -119,7 +119,6 @@ plan:
     - branches@greenaddress/esplora
   stage: plan
   script:
-    - (echo -n "$V2_PK" > terraform/modules/tor/v2.pk)
     - (echo -n "$V3_PK" > terraform/modules/tor/v3.pk)
     - (echo -n "$V3_PUBK" > terraform/modules/tor/v3.pubk)
     - (cd terraform && terraform init -input=false &&
@@ -145,7 +144,6 @@ plan_main:
     - master@greenaddress/esplora
     - /^main_v.*/
   script:
-    - (echo -n "$V2_PK" > terraform/modules/tor/v2.pk)
     - (echo -n "$V3_PK" > terraform/modules/tor/v3.pk)
     - (echo -n "$V3_PUBK" > terraform/modules/tor/v3.pubk)
     - (cd terraform && terraform init -input=false &&
@@ -172,7 +170,6 @@ deploy_main:
     - master@greenaddress/esplora
     - /^main_v.*/
   script:
-    - (echo -n "$V2_PK" > terraform/modules/tor/v2.pk)
     - (echo -n "$V3_PK" > terraform/modules/tor/v3.pk)
     - (echo -n "$V3_PUBK" > terraform/modules/tor/v3.pubk)
     - (cd terraform && terraform init -input=false &&
@@ -212,7 +209,7 @@ plan_bitcoin_mainnet:
         -var "initial_delay_sec=1200"
         -var "image_source_project=$IMAGE_SOURCE_PROJECT"
         -var "mempooldat=$MEMPOOLDAT"
-        -var "fullurl=https://blockstream.info/_sync/mempool"
+        -var "fullurl=https://blockstream.info/_sync"
         -input=false)
 
 deploy_bitcoin_mainnet:
@@ -243,7 +240,7 @@ deploy_bitcoin_mainnet:
         -var "initial_delay_sec=1200"
         -var "image_source_project=$IMAGE_SOURCE_PROJECT"
         -var "mempooldat=$MEMPOOLDAT"
-        -var "fullurl=https://blockstream.info/_sync/mempool"
+        -var "fullurl=https://blockstream.info/_sync"
         -input=false -auto-approve)
 
 plan_bitcoin_testnet:
@@ -266,7 +263,7 @@ plan_bitcoin_testnet:
         -var "initial_delay_sec=600"
         -var "image_source_project=$IMAGE_SOURCE_PROJECT"
         -var "mempooldat=$MEMPOOLDAT"
-        -var "fullurl=https://blockstream.info/testnet/_sync/mempool"
+        -var "fullurl=https://blockstream.info/testnet/_sync"
         -input=false)
 
 deploy_bitcoin_testnet:
@@ -297,7 +294,7 @@ deploy_bitcoin_testnet:
         -var "initial_delay_sec=600"
         -var "image_source_project=$IMAGE_SOURCE_PROJECT"
         -var "mempooldat=$MEMPOOLDAT"
-        -var "fullurl=https://blockstream.info/testnet/_sync/mempool"
+        -var "fullurl=https://blockstream.info/testnet/_sync"
         -input=false -auto-approve)
 
 plan_liquid_mainnet:
@@ -320,7 +317,7 @@ plan_liquid_mainnet:
         -var "initial_delay_sec=900"
         -var "image_source_project=$IMAGE_SOURCE_PROJECT"
         -var "mempooldat=$MEMPOOLDAT"
-        -var "fullurl=https://blockstream.info/liquid/_sync/mempool"
+        -var "fullurl=https://blockstream.info/liquid/_sync"
         -input=false)
 
 deploy_liquid_mainnet:
@@ -351,7 +348,7 @@ deploy_liquid_mainnet:
         -var "initial_delay_sec=900"
         -var "image_source_project=$IMAGE_SOURCE_PROJECT"
         -var "mempooldat=$MEMPOOLDAT"
-        -var "fullurl=https://blockstream.info/liquid/_sync/mempool"
+        -var "fullurl=https://blockstream.info/liquid/_sync"
         -input=false -auto-approve)
 
 plan_liquid_testnet:
@@ -374,7 +371,7 @@ plan_liquid_testnet:
         -var "initial_delay_sec=900"
         -var "image_source_project=$IMAGE_SOURCE_PROJECT"
         -var "mempooldat=$MEMPOOLDAT"
-        -var "fullurl=https://blockstream.info/liquidtestnet/_sync/mempool"
+        -var "fullurl=https://blockstream.info/liquidtestnet/_sync"
         -input=false)
 
 deploy_liquid_testnet:
@@ -405,7 +402,7 @@ deploy_liquid_testnet:
         -var "initial_delay_sec=900"
         -var "image_source_project=$IMAGE_SOURCE_PROJECT"
         -var "mempooldat=$MEMPOOLDAT"
-        -var "fullurl=https://blockstream.info/liquidtestnet/_sync/mempool"
+        -var "fullurl=https://blockstream.info/liquidtestnet/_sync"
         -input=false -auto-approve)
 
 deploy_staging_bitcoin_mainnet:

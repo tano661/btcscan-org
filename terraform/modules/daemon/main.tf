@@ -80,7 +80,7 @@ resource "google_compute_instance_template" "daemon" {
     disk_type    = "pd-ssd"
     auto_delete  = true
     boot         = true
-    disk_size_gb = "20"
+    disk_size_gb = "50"
   }
 
   network_interface {
@@ -95,8 +95,13 @@ resource "google_compute_instance_template" "daemon" {
   }
 
   service_account {
-    email  = google_service_account.daemon[0].email
-    scopes = ["compute-rw", "storage-ro", "https://www.googleapis.com/auth/logging.write"]
+    email = google_service_account.daemon[0].email
+    scopes = [
+      "compute-rw",
+      "storage-ro",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring.write",
+    ]
   }
 
   lifecycle {
