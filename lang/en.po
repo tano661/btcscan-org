@@ -269,6 +269,15 @@ msgstr "(RBF)"
 msgid "Recent transactions"
 msgstr "Recent transactions"
 
+msgid "Bitcoin Transactions"
+msgstr "Bitcoin Transactions"
+
+msgid "Bitcoin Blocks"
+msgstr "Bitcoin Blocks"
+
+msgid "Bitcoin Blockchain Explorer"
+msgstr "Bitcoin Blockchain Explorer"
+
 msgid "Reissuance"
 msgstr "Reissuance"
 
