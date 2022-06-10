@@ -128,6 +128,10 @@ if [ "$TEMPLATE" == "btcscan" ]; then
   d=/srv/explorer/source/flavors/btcscan
 fi
 
+if [ "$TEMPLATE" == "btcscan-testnet" ]; then
+  d=/srv/explorer/source/flavors/btcscan-testnet
+fi
+
 function preprocess(){
    in_file=$1
    out_file=$2
