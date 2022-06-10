@@ -9,7 +9,7 @@ SYNC_SECRET=$4
 SYNC_SOURCE=$5
 
 if [ -z "$FLAVOR" ] || [ ! -d /srv/explorer/static/$FLAVOR ]; then
-    echo "Please provide bitcoin-testnet, bitcoin-mainnet, bitcoin-mainnet-blockstream, bitcoin-mainnet-btcscan, bitcoin-regtest, liquid-mainnet or liquid-regtest as a parameter"
+    echo "Please provide bitcoin-testnet, bitcoin-mainnet, bitcoin-mainnet-blockstream, bitcoin-mainnet-btcscan, bitcoin-testnet-btcscan, bitcoin-regtest, liquid-mainnet or liquid-regtest as a parameter"
     echo "For example run.sh bitcoin-mainnet explorer"
     exit 1
 fi
