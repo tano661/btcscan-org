@@ -128,6 +128,12 @@ h3.table-title {
   margin: 10px 40px 30px 26px;
 }
 
+p.table-title {
+  font-weight: 600;
+  font-size: 28px;
+  margin: 10px 40px 30px 26px;
+}
+
 .dash-container .tx-container {
   font-size: 18px;
   line-height: 23px;
@@ -174,6 +180,14 @@ h3.table-title {
 
   .dash-container .tx-container {
     margin-top: 50px;
+  }
+
+  h3.table-title{
+    margin: 10px 20px 30px;
+  }
+
+  p.table-title{
+    margin: 10px 20px 30px;
   }
 }
 

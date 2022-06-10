@@ -241,7 +241,8 @@ export default function main({ DOM, HTTP, route, storage, scanner: scan$, search
         !isReady ? 'loading' : view || (loading ? 'loading' : 'notFound'))
 
   // Page title
-  , title$ = O.merge(page$.mapTo(null)
+  , title$ = O.merge(page$.withLatestFrom(t$, (_, t) => t`Bitcoin Blockchain Explorer`)
+                   , goBlocks$.withLatestFrom(t$, (_, t) => t`Bitcoin Blocks`) 
                    , block$.filter(notNully).withLatestFrom(t$, (block, t) => t`Block #${block.height}: ${block.id}`)
                    , tx$.filter(notNully).withLatestFrom(t$, (tx, t) => t`Transaction: ${tx.txid}`)
                    , addr$.filter(notNully).withLatestFrom(goAddr$, t$, (_, goAddr, t) => t`Address: ${goAddr.display_addr}`)
@@ -249,7 +250,7 @@ export default function main({ DOM, HTTP, route, storage, scanner: scan$, search
                    , goAssetList$.withLatestFrom(t$, (_, t) => t`Registered assets`)
                    , goPush$.withLatestFrom(t$, (_, t) => t`Broadcast transaction`)
                    , goMempool$.withLatestFrom(t$, (_, t) => t`Mempool`)
-                   , goRecent$.withLatestFrom(t$, (_, t) => t`Recent transactions`))
+                   , goRecent$.withLatestFrom(t$, (_, t) => t`Bitcoin Transactions`))
 
   // App state
   , state$ = combine({ t$, error$, tipHeight$, spends$

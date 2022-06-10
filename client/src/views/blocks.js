@@ -3,12 +3,12 @@ import { formatTime, formatNumber } from './util'
 
 const staticRoot = process.env.STATIC_ROOT || ''
 
-export const blks = (blocks, viewMore, loadMore, { t, loading, ...S }) =>
+export const blks = (blocks, viewMore, loadMore, { t, loading, page, ...S }) =>
   <div className="block-container">
   { !blocks ? <img src="img/Loading.gif" className="loading-delay" />
   : !blocks.length ? <p>{t`No recent blocks`}</p>
   : <div className="blocks-table">
-      <h3 className="table-title">{t`Latest Blocks`}</h3>
+      <p className="table-title">{t`Latest Blocks`}</p>
       <div className="blocks-table-row header">
         <div className="blocks-table-cell">{t`Height`}</div>
         <div className="blocks-table-cell">{process.browser ? t`Timestamp` : t`Timestamp (UTC)`}</div>

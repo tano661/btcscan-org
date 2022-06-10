@@ -99,6 +99,9 @@ Previous output script
 Privacy analysis
 (RBF)
 Recent transactions
+Bitcoin Transactions
+Bitcoin Blocks
+Bitcoin Blockchain Explorer
 Re-issuable
 Reissuance
 Reissuance commitment

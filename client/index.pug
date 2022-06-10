@@ -2,7 +2,7 @@ doctype html
 
 - baseTitle = process.env.SITE_TITLE || 'Block Explorer'
 - staticRoot = process.env.STATIC_ROOT || ''
-- pageTitle = prerender_title ? `${prerender_title} · ${baseTitle}` : baseTitle
+- pageTitle = prerender_title ? `${prerender_title} | ${baseTitle}` : baseTitle
 - bodyClass = theme ? `theme-${theme}` : ''
 
 - cssPath = t ? t`style.css` : 'style.css'
@@ -27,6 +27,15 @@ head
   link(rel='shortcut icon', type='image/png', href=staticRoot+'img/favicon.png')
   link(rel='stylesheet', href=staticRoot+'bootstrap.min.css')
   link(rel='stylesheet', href=staticRoot+cssPath)
+  script(async, src="https://www.googletagmanager.com/gtag/js?id=G-5J77L5H1MF")
+  script.
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-5J77L5H1MF');
 
   if process.env.CANONICAL_URL
     //- open search requires the absolute URL of the explorer

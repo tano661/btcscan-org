@@ -9,7 +9,7 @@ export const transactions = (txs, viewMore, { t } ) =>
       { !txs ? <img src="img/Loading.gif" className="loading-delay" />
       : !txs.length ? <p>{t`No recent transactions`}</p>
       : <div className="transactions-table">
-            <h3 className="table-title">{t`Latest Transactions`}</h3>
+            <p className="table-title">{t`Latest Transactions`}</p>
             <div className="transactions-table-row header">
               <div className="transactions-table-cell">{t`Transaction ID`}</div>
               { txs[0].value != null && <div className="transactions-table-cell">{t`Value`}</div> }
