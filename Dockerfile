@@ -42,8 +42,8 @@ RUN source /root/.nvm/nvm.sh \
     npm run dist -- bitcoin-mainnet blockstream \
  && DEST=/srv/explorer/static/bitcoin-mainnet-btcscan \
     npm run dist -- bitcoin-mainnet btcscan \
- && DEST=/srv/explorer/static/bitcoin-mainnet-btcscan-testnet \
-    npm run dist -- bitcoin-mainnet btcscan-testnet \
+ && DEST=/srv/explorer/static/bitcoin-testnet-btcscan \
+     npm run dist -- bitcoin-testnet btcscan \
  && DEST=/srv/explorer/static/bitcoin-testnet-blockstream \
     npm run dist -- bitcoin-testnet blockstream \
  && DEST=/srv/explorer/static/bitcoin-signet-blockstream \
