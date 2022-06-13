@@ -1,6 +1,6 @@
 doctype html
 
-- baseTitle = process.env.SITE_TITLE || 'Block Explorer'
+- baseTitle = process.env.SITE_TITLE || 'Btcscan'
 - staticRoot = process.env.STATIC_ROOT || ''
 - pageTitle = prerender_title ? `${prerender_title} | ${baseTitle}` : baseTitle
 - bodyClass = theme ? `theme-${theme}` : ''
@@ -13,7 +13,7 @@ head
   meta(charset='utf-8')
   title= pageTitle
   meta(property='og:title', content=process.env.OG_TITLE || process.env.SITE_TITLE || 'Block explorer')
-  meta(name='description', content=process.env.SITE_DESC || 'Esplora Block Explorer')
+  meta(name='description', content=process.env.SITE_DESC || 'Btcscan Block Explorer')
 
   if canon_url
     link(rel="canonical", href=canon_url)
@@ -27,15 +27,14 @@ head
   link(rel='shortcut icon', type='image/png', href=staticRoot+'img/favicon.png')
   link(rel='stylesheet', href=staticRoot+'bootstrap.min.css')
   link(rel='stylesheet', href=staticRoot+cssPath)
-  script(async, src="https://www.googletagmanager.com/gtag/js?id=G-5J77L5H1MF")
+  // Google Tag Manager
   script.
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag('js', new Date());
-
-    gtag('config', 'G-5J77L5H1MF');
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K76VQVF');
+  // End Google Tag Manager
 
   if process.env.CANONICAL_URL
     //- open search requires the absolute URL of the explorer
@@ -44,6 +43,10 @@ head
   != process.env.HEAD_HTML
 
 body(class=bodyClass, lang=lang, dir=dir)
+  // Google Tag Manager (noscript)
+  noscript
+    iframe(src='https://www.googletagmanager.com/ns.html?id=GTM-K76VQVF' height='0' width='0' style='display:none;visibility:hidden')
+  // End Google Tag Manager (noscript)
   #explorer!= prerender_html || ''
 
   if !noscript

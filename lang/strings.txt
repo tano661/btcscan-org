@@ -102,6 +102,9 @@ Recent transactions
 Bitcoin Transactions
 Bitcoin Blocks
 Bitcoin Blockchain Explorer
+Btcscan's Bitcoin block explorer provides real-time blockchain data. With the BTC block explorer, you can search blocks, addresses, and transactions on the Bitcoin blockchain
+Btcscan’s Bitcoin blockchain explorer helps make sense of past and real-time network data. Search BTC explorer for information on blocks, transactions, and addresses
+Check bitcoin transactions using Btcscan. Btcscan is a tool for tracking BTC transactions. ID of the transaction, bitcoin value, size, and fee can all be found using the bitcoin block explorer
 Re-issuable
 Reissuance
 Reissuance commitment
