@@ -272,6 +272,15 @@ msgstr "Recent transactions"
 msgid "Bitcoin Transactions"
 msgstr "Bitcoin Transactions"
 
+msgid "Btcscan's Bitcoin block explorer provides real-time blockchain data. With the BTC block explorer, you can search blocks, addresses, and transactions on the Bitcoin blockchain"
+msgstr "Btcscan's Bitcoin block explorer provides real-time blockchain data. With the BTC block explorer, you can search blocks, addresses, and transactions on the Bitcoin blockchain"
+
+msgid "Btcscan’s Bitcoin blockchain explorer helps make sense of past and real-time network data. Search BTC explorer for information on blocks, transactions, and addresses"
+msgstr "Btcscan’s Bitcoin blockchain explorer helps make sense of past and real-time network data. Search BTC explorer for information on blocks, transactions, and addresses"
+
+msgid "Check bitcoin transactions using Btcscan. Btcscan is a tool for tracking BTC transactions. ID of the transaction, bitcoin value, size, and fee can all be found using the bitcoin block explorer"
+msgstr "Check bitcoin transactions using Btcscan. Btcscan is a tool for tracking BTC transactions. ID of the transaction, bitcoin value, size, and fee can all be found using the bitcoin block explorer"
+
 msgid "Bitcoin Blocks"
 msgstr "Bitcoin Blocks"
 

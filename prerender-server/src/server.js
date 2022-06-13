@@ -8,10 +8,10 @@ import l10n from '../client/l10n'
 import render from '../client/run-server'
 
 const themes = [ 'light', 'dark' ]
-    , langs = Object.keys(l10n)
-    , baseHref = process.env.BASE_HREF || '/'
-    , canonBase = process.env.CANONICAL_URL ? process.env.CANONICAL_URL.replace(/\/$/, '') : null
-    , apiUrl = process.env.API_URL.replace(/\/$/, '')
+  , langs = Object.keys(l10n)
+  , baseHref = process.env.BASE_HREF || '/'
+  , canonBase = process.env.CANONICAL_URL ? process.env.CANONICAL_URL.replace(/\/$/, '') : null
+  , apiUrl = process.env.API_URL.replace(/\/$/, '')
 
 const rpath = p => path.join(__dirname, p)
 
@@ -48,11 +48,12 @@ app.use((req, res, next) => {
     res.status(resp.status || 200)
     res.render(indexView, {
       prerender_title: resp.title
-    , prerender_html: resp.html
-    , canon_url: canonBase ? canonBase + req.url : null
-    , noscript: true
-    , theme
-    , t: l10n[lang]
+      , prerender_description: resp.description
+      , prerender_html: resp.html
+      , canon_url: canonBase ? canonBase + req.url : null
+      , noscript: true
+      , theme
+      , t: l10n[lang]
     })
   })
 

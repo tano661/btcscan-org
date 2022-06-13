@@ -12,11 +12,21 @@ import { Observable as O } from './rxjs'
 import main from './app'
 
 const apiBase = (process.env.API_URL || '/api').replace(/\/+$/, '')
-    , webBase = process.env.BASE_HREF || '/'
-    , initTitle = process.browser ? document.title : process.env.SITE_TITLE
+  , webBase = process.env.BASE_HREF || '/'
+  , initTitle = process.browser ? document.title : process.env.SITE_TITLE
 
 const titleDriver = title$ => O.from(title$)
-  .subscribe(title => document.title = title ? `${title} | ${initTitle}` : initTitle)
+  .subscribe(title => {
+    document.title = title ? `${title} | ${initTitle}` : initTitle;
+    document.querySelector('meta[property="og:title"]').setAttribute("content", title ? `${title} | ${initTitle}` : initTitle);
+  })
+
+const descriptionDriver = description$ => O.from(description$)
+  .subscribe(description => {
+    if (description) {
+      document.querySelector('meta[name="description"]').setAttribute("content", description);
+    }
+  })
 
 const blindingDriver = process.env.IS_ELEMENTS
   ? require('./driver/blinding')
@@ -24,11 +34,12 @@ const blindingDriver = process.env.IS_ELEMENTS
 
 run(main, {
   DOM: makeDOMDriver('#explorer')
-, HTTP: makeHTTPDriver()
-, route: makeRouteDriver(captureClicks(makeHistoryDriver({ basename: webBase })))
-, storage: storageDriver
-, search: makeSearchDriver(apiBase)
-, title: titleDriver
-, scanner: makeScanDriver()
-, blinding: blindingDriver
+  , HTTP: makeHTTPDriver()
+  , route: makeRouteDriver(captureClicks(makeHistoryDriver({ basename: webBase })))
+  , storage: storageDriver
+  , search: makeSearchDriver(apiBase)
+  , title: titleDriver
+  , description: descriptionDriver
+  , scanner: makeScanDriver()
+  , blinding: blindingDriver
 })
