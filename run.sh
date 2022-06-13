@@ -46,7 +46,7 @@ cp /srv/explorer/source/contrib/runits/socat.runit /etc/service/socat/run
 
 NGINX_NOSLASH_PATH="unused"
 NGINX_REWRITE_NOJS='return 301 " /nojs$uri"'
-NGINX_CSP="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com; img-src 'self' 'unsafe-inline' https://www.googletagmanager.com data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'"
+NGINX_CSP="default-src 'self' https://www.google-analytics.com; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com; img-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://ssl.google-analytics.com https://www.google-analytics.com data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; object-src 'none'"
 
 if [ "${DAEMON}" != "liquid" ]; then
     if [ "$NETWORK" == "testnet" ] || [ "$NETWORK" == "signet" ] || [ "$NETWORK" == "regtest" ]; then
