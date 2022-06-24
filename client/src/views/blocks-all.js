@@ -14,7 +14,7 @@ export const recentBlocks = ({ t, blocks, loading, ...S }) => homeLayout(
   <div className="container">
     { blks(blocks, false, true, { t, loading, ...S }) }
     <div style={{height: '400px', overflowY: 'scroll', marginTop: '50px'}}>
-      <h1>Bitcoin Blocks | Btcscan</h1>
+      <h1>Bitcoin Blocks</h1>
       <p>The history of Bitcoin starts with its creator, Satoshi Nakamoto. He created this new digital currency in 2008 as an open-source project so that it could be used to facilitate transactions without any central authority or bank involvement.</p>
       <p>The Bitcoin blockchain is a digital ledger of all transactions that have ever been executed using Bitcoin. It is constantly growing as "completed" blocks are added to it with a new set of recordings. Each block contains a cryptographic hash of the previous block, a timestamp, and transaction data. </p>
       <p>Bitcoin users utulize blockchain explorers to track Bitcoin transactions when they send or receive funds. Bitcoin holds a unique status compared to incumbent fiat currencies, in that there are a finite number of them: 21 million BTC. </p>

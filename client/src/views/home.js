@@ -19,7 +19,7 @@ export const dashBoard = ({ t, blocks, dashboardState, loading, ...S }) => {
         { blks( dashblocks, true, false, { t, ...S }) }
         {transactions( dashTxs, true, { t } )}
         <div style={{height: '400px', overflowY: 'scroll', marginTop: '50px'}}>
-          <h1>Bitcoin Blockchain Explorer | Btcscan</h1>
+          <h1>Bitcoin Blockchain Explorer</h1>
           <p>A "block explorer" can be defined as an online portal that facilitates the sourcing of data relating to a certain blockchain. Additionally, an explorer gives useful updates regarding transactions happening and the addresses tied to the specified blocks. This data consists of details like the height of the block, timestamp of block mining, and extra details like the ID of transactions performed on the block, etc.</p>
           <p>A block explorer enables one to examine the transactions connected to a block. It can also be used to view the addresses involved with various transactions.</p>
           <p>The BTC block explorer, popularly known as Bitcoin tracker,  serves as an essential instrument for anyone who wants to use the Bitcoin blockchain. It is possible to check Bitcoin balance, gather info about blocks as well as the transactions encompassed in them by using a block explorer.</p>

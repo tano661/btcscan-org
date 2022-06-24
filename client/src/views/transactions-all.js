@@ -14,7 +14,7 @@ export const recentTxs = ({ mempoolRecent, t, ...S }) => homeLayout(
   <div className="container">
     {transactions( mempoolRecent, false, { t, ...S })}
     <div style={{height: '400px', overflowY: 'scroll', marginTop: '50px'}}>
-      <h1>Bitcoin Transactions | Btcscan</h1>
+      <h1>Bitcoin Transactions</h1>
       <p>Btcscan is an online Bitcoin blockchain viewer. The site provides data about Bitcoin transactions and Bitcoin Blocks. This explorer also allows users to check Bitcoin blockchain activities in real-time.</p>
       <p>Bitcoin transactions are recorded on a public ledger called the blockchain. Transactions are verified by network nodes through cryptography, and every recorded transaction is immutable. Bitcoin users engage with block explorers to track their Bitcoin transactions.</p>
       <p>The sender of a transaction must pay a transaction fee. The amount of the fee varies depending on several factors, such as the number of transactions in the block, or the size of the transaction. In general, the higher the fee, the more likely a transaction is to be included in a block.</p>
