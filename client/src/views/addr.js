@@ -3,38 +3,63 @@ import { last } from '../util'
 import layout from './layout'
 import search from './search'
 import { txBox } from './tx'
-import { formatSat, formatNumber } from './util'
+import { formatSat, formatNumber, formatTime } from './util'
 import { addrTxsPerPage as perPage, maxMempoolTxs } from '../const'
 
 const staticRoot = process.env.STATIC_ROOT || ''
+
+const getTransactionDate = (txs, reversed = false) => {
+  const unknownStatus = '';
+
+  if (!txs || txs.length === 0) return unknownStatus;
+
+  let foundConfirmedTx = null;
+
+  if (reversed) {
+    foundConfirmedTx = txs.find(item => item.status.confirmed)
+  } else {
+    for (let i=txs.length-1; i<txs.length; i--) {
+      const item = txs[i];
+
+      if (item.status.confirmed) {
+        foundConfirmedTx = item;
+        break;
+      }
+    }
+  }
+
+  if (!foundConfirmedTx) return unknownStatus;
+
+  return formatTime(foundConfirmedTx.status.block_time);
+}
 
 export default ({ t, addr, addrQR, addrTxs, goAddr, openTx, spends, tipHeight, loading, ...S }) => {
   if (!addr) return;
 
   const { chain_stats, mempool_stats } = addr
-      , chain_utxo_count = chain_stats.funded_txo_count-chain_stats.spent_txo_count
-      , chain_utxo_sum = chain_stats.funded_txo_sum-chain_stats.spent_txo_sum
-      , mempool_utxo_count = mempool_stats.funded_txo_count-mempool_stats.spent_txo_count
-      , mempool_utxo_sum = mempool_stats.funded_txo_sum-mempool_stats.spent_txo_sum
-      , total_utxo_count = chain_utxo_count+mempool_utxo_count
-      , total_utxo_sum = chain_utxo_sum+mempool_utxo_sum
-      , total_txs = chain_stats.tx_count + mempool_stats.tx_count
-      , shown_txs = addrTxs ? addrTxs.length : 0
+    , chain_utxo_count = chain_stats.funded_txo_count-chain_stats.spent_txo_count
+    , chain_utxo_sum = chain_stats.funded_txo_sum-chain_stats.spent_txo_sum
+    , mempool_utxo_count = mempool_stats.funded_txo_count-mempool_stats.spent_txo_count
+    , mempool_utxo_sum = mempool_stats.funded_txo_sum-mempool_stats.spent_txo_sum
+    , total_utxo_count = chain_utxo_count+mempool_utxo_count
+    , total_utxo_sum = chain_utxo_sum+mempool_utxo_sum
+    , total_txs = chain_stats.tx_count + mempool_stats.tx_count
+    , shown_txs = addrTxs ? addrTxs.length : 0
 
-      // paging is on a best-effort basis, might act oddly if the set of transactions change
-      // while the user is paging.
-      , avail_mempool_txs = Math.min(maxMempoolTxs, mempool_stats.tx_count)
-      , est_prev_total_seen_count  = goAddr.last_txids.length ? goAddr.est_chain_seen_count + avail_mempool_txs : 0
-      , est_curr_chain_seen_count = goAddr.last_txids.length ? goAddr.est_chain_seen_count + shown_txs : shown_txs - avail_mempool_txs
-      , last_seen_txid = (shown_txs > 0 && est_curr_chain_seen_count < chain_stats.tx_count) ? last(addrTxs).txid : null
-      , next_paging_txids = last_seen_txid ? [ ...goAddr.last_txids, last_seen_txid ].join(',') : null
-      , prev_paging_txids = goAddr.last_txids.length ? goAddr.last_txids.slice(0, -1).join(',') : null
-      , prev_paging_est_count = goAddr.est_chain_seen_count ? Math.max(goAddr.est_chain_seen_count-perPage, 0) : 0
+    // paging is on a best-effort basis, might act oddly if the set of transactions change
+    // while the user is paging.
+    , avail_mempool_txs = Math.min(maxMempoolTxs, mempool_stats.tx_count)
+    , est_prev_total_seen_count  = goAddr.last_txids.length ? goAddr.est_chain_seen_count + avail_mempool_txs : 0
+    , est_curr_chain_seen_count = goAddr.last_txids.length ? goAddr.est_chain_seen_count + shown_txs : shown_txs - avail_mempool_txs
+    , last_seen_txid = (shown_txs > 0 && est_curr_chain_seen_count < chain_stats.tx_count) ? last(addrTxs).txid : null
+    , next_paging_txids = last_seen_txid ? [ ...goAddr.last_txids, last_seen_txid ].join(',') : null
+    , prev_paging_txids = goAddr.last_txids.length ? goAddr.last_txids.slice(0, -1).join(',') : null
+    , prev_paging_est_count = goAddr.est_chain_seen_count ? Math.max(goAddr.est_chain_seen_count-perPage, 0) : 0
 
   const display_addr = addr.display_addr
-      // in elements mode, only show QR codes for confidential addresses
-      , is_confidential = process.env.IS_ELEMENTS && !!goAddr.confidential_addr
-      , show_qr = !process.env.IS_ELEMENTS || is_confidential
+    // in elements mode, only show QR codes for confidential addresses
+    , is_confidential = process.env.IS_ELEMENTS && !!goAddr.confidential_addr
+    , show_qr = !process.env.IS_ELEMENTS || is_confidential
 
   return layout(
     <div>
@@ -42,13 +67,14 @@ export default ({ t, addr, addrQR, addrTxs, goAddr, openTx, spends, tipHeight, l
         <div className="container">
           <div className="row">
             <div className="col-sm-8">
-              <h1>{t`Address`}</h1>
+              <h1>{t`Bitcoin Address`}</h1>
               <div className="block-hash">
                 <span>{display_addr}</span>
                 { process.browser && <div className="code-button">
                   <div className="code-button-btn" role="button" data-clipboardCopy={display_addr}></div>
                 </div> }
               </div>
+              <p>Address {display_addr} has {total_txs} transaction on the Bitcoin blockchain{addrTxs ? ` since ${getTransactionDate(addrTxs)}` : ''}.  It has received a total of {chain_stats.funded_txo_sum > 0 ? `${formatSat(chain_stats.funded_txo_sum)}` : ''} and has sent a total of {chain_stats.spent_txo_sum > 0 ? `${formatSat(chain_stats.spent_txo_sum)}` : ''}. The current balance of this address is confirmed {chain_stats.funded_txo_sum - chain_stats.spent_txo_sum > 0 ? `${formatSat(chain_stats.funded_txo_sum - chain_stats.spent_txo_sum)}` : '0 BTC'}.</p>
             </div>
             {show_qr && <div className="col-sm-4">
               <img className="float-sm-right address-qr-code" src={ addrQR } />
@@ -58,16 +84,16 @@ export default ({ t, addr, addrQR, addrTxs, goAddr, openTx, spends, tipHeight, l
       </div>
       <div className="container">
         <div className="stats-table">
-        { is_confidential && [
-          <div>
-            <div>{ t`Confidential` }</div>
-            <div>{ goAddr.confidential_addr }</div>
-          </div>
-        , <div>
-            <div>{ t`Unconfidential` }</div>
-            <div>{ goAddr.addr }</div>
-          </div>
-        ] }
+          { is_confidential && [
+            <div>
+              <div>{ t`Confidential` }</div>
+              <div>{ goAddr.confidential_addr }</div>
+            </div>
+            , <div>
+              <div>{ t`Unconfidential` }</div>
+              <div>{ goAddr.addr }</div>
+            </div>
+          ] }
 
           { (mempool_stats.tx_count > 0 || chain_stats.tx_count == 0) && <div>
             <div>{t`Total tx count`}</div>
@@ -89,6 +115,15 @@ export default ({ t, addr, addrQR, addrTxs, goAddr, openTx, spends, tipHeight, l
           { chain_stats.tx_count > 0 && <div>
             <div>{t`Confirmed unspent`}</div>
             <div>{fmtTxos(chain_utxo_count, chain_utxo_sum, t)}</div>
+          </div> }
+
+          { chain_stats.tx_count > 0 && <div>
+            <div>{t`First Balance Change`}</div>
+            <div>{getTransactionDate(addrTxs)}</div>
+          </div> }
+          { chain_stats.tx_count > 0 && <div>
+            <div>{t`Last Balance Change`}</div>
+            <div>{getTransactionDate(addrTxs, true)}</div>
           </div> }
 
           { mempool_stats.tx_count > 0 && <div>
@@ -114,51 +149,49 @@ export default ({ t, addr, addrQR, addrTxs, goAddr, openTx, spends, tipHeight, l
           <div className="transactions">
             <h3>{txsShownText(total_txs, est_prev_total_seen_count, shown_txs, t)}</h3>
             { addrTxs ? addrTxs.map(tx => txBox(tx, { openTx, tipHeight, t, spends, addr, ...S }))
-                       : <img src="img/Loading.gif" className="loading-delay" /> }
+              : <img src="img/Loading.gif" className="loading-delay" /> }
           </div>
 
           <div className="load-more-container">
             <div>
               { loading ? <div className="load-more disabled"><span>{t`Load more`}</span><div><img src="img/Loading.gif" /></div></div>
-                        : pagingNav(addr, last_seen_txid, est_curr_chain_seen_count, prev_paging_txids, next_paging_txids, prev_paging_est_count, t) }
+                : pagingNav(addr, last_seen_txid, est_curr_chain_seen_count, prev_paging_txids, next_paging_txids, prev_paging_est_count, t) }
             </div>
           </div>
 
         </div>
       </div>
     </div>
-  , { t, ...S })
+    , { t, ...S })
 }
 
 const fmtTxos = (count, sum, t) =>
   (count > 0 ? t`${formatNumber(count)} outputs` : t`No outputs`)
-+ (sum > 0 ? ` (${formatSat(sum)})` : '')
+  + (sum > 0 ? ` (${formatSat(sum)})` : '')
 
 const txsShownText = (total, start, shown, t) =>
   (total > perPage && shown > 0)
-  ? t`${ start > 0 ? `${start}-${+start+shown}` : shown} of ${formatNumber(total)} Transactions`
-  : t`${total} Transactions`
+    ? t`${ start > 0 ? `${start}-${+start+shown}` : shown} of ${formatNumber(total)} Transactions`
+    : t`${total} Transactions`
 
 const pagingNav = (addr, last_seen_txid, est_curr_chain_seen_count, prev_paging_txids, next_paging_txids, prev_paging_est_count, t) =>
   process.browser
 
-? last_seen_txid != null &&
+    ? last_seen_txid != null &&
     <div className="load-more" role="button" data-loadmoreTxsLastTxid={last_seen_txid} data-loadmoreTxsAddr={addr.address}>
       <span>{t`Load more`}</span>
       <div><img alt="" src={`${staticRoot}img/icons/arrow_down.png`} /></div>
     </div>
 
-: [
-    prev_paging_txids != null &&
+    : [
+      prev_paging_txids != null &&
       <a className="load-more" href={`address/${addr.address}?txids=${prev_paging_txids}&c=${prev_paging_est_count}`}>
         <div><img alt="" src={`${staticRoot}img/icons/arrow_left_blu.png`} /></div>
         <span>{t`Newer`}</span>
       </a>
-  , next_paging_txids != null &&
+      , next_paging_txids != null &&
       <a className="load-more" href={`address/${addr.address}?txids=${next_paging_txids}&c=${est_curr_chain_seen_count}`}>
         <span>{t`Older`}</span>
         <div><img alt="" src={`${staticRoot}img/icons/arrow_right_blu.png`} /></div>
       </a>
-  ]
-
-
+    ]

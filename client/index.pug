@@ -1,6 +1,6 @@
 doctype html
 
-- baseTitle = process.env.SITE_TITLE || 'Btcscan'
+- baseTitle = 'Bitcoin Blockchain Explorer: find any bitcoin transaction with BTCScan'
 - staticRoot = process.env.STATIC_ROOT || ''
 - pageTitle = prerender_title ? `${prerender_title} | ${baseTitle}` : baseTitle
 - bodyClass = theme ? `theme-${theme}` : ''
@@ -12,8 +12,14 @@ doctype html
 head
   meta(charset='utf-8')
   title= pageTitle
-  meta(property='og:title', content=process.env.OG_TITLE || process.env.SITE_TITLE || 'Block explorer')
-  meta(name='description', content=process.env.SITE_DESC || 'Btcscan Block Explorer')
+  meta(name='og:title' content='Bitcoin Blockchain Explorer: find any bitcoin transaction | BTCScan')
+  meta(property='og:title', content='Bitcoin Blockchain Explorer: find any bitcoin transaction with BTCScan')
+  meta(name='description', content='The most trusted and popular bitcoin (BTC) blockchain explorer and crypto transaction search')
+  meta(name='og:description' content='The most trusted and popular bitcoin (BTC) blockchain explorer and crypto transaction search')
+  meta(property='og:url' content='https://btcscan.org')
+  meta(property='og:type' content='website')
+  meta(name='twitter:description' content='The most trusted and popular bitcoin (BTC) blockchain explorer and crypto transaction search')
+  meta(name='twitter:title' content='Bitcoin Blockchain Explorer: find any bitcoin transaction | BTCScan')
 
   if canon_url
     link(rel="canonical", href=canon_url)
