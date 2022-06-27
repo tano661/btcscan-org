@@ -10,12 +10,16 @@ const staticRoot = process.env.STATIC_ROOT || ''
 
 const makeStatus = b => b && ({ confirmed: true, block_height: b.height, block_hash: b.id })
 
-export default ({ t, block: b, blockStatus: status, blockTxs, openTx, spends, openBlock, goBlock, tipHeight, loading, page, txsStatus=makeStatus(b), ...S }) => b && layout(
+const confirmationText = (status, tipHeight) =>
+  !status.confirmed ? 'It has 0 confirmations' : tipHeight ? `It has ${tipHeight - status.block_height + 1} confirmations` : `confirmed`
+
+export default ({ t, block: b, tx, blockStatus: status, blockTxs, openTx, spends, openBlock, goBlock, tipHeight, loading, page, txsStatus=makeStatus(b), ...S }) => b && layout(
   <div>
     <div className="block-page">
       <div className="container">
         <div>
           <h1 className="block-header-title">{t`Block ${b.height}`}</h1>
+          <p>Block was mined on {formatTime(b.timestamp)}. {confirmationText(txsStatus, tipHeight)} on the Bitcoin blockchain. There are {b.tx_count} transactions in block {b.height}.</p>
           <div className="block-hash"><span>{b.id}</span>
             { process.browser && <div className="code-button">
               <div className="code-button-btn" role="button" data-clipboardCopy={b.id}></div>
@@ -78,14 +82,14 @@ export default ({ t, block: b, blockStatus: status, blockTxs, openTx, spends, op
         { /* advanced details */ }
         { openBlock == b.id && [
 
-            <div>
-              <div>{t`Version`}</div>
-              <div className="mono">{formatHex(b.version)}</div>
-            </div>
+          <div>
+            <div>{t`Version`}</div>
+            <div className="mono">{formatHex(b.version)}</div>
+          </div>
           , <div>
-              <div>{t`Merkle root`}</div>
-              <div className="mono">{b.merkle_root}</div>
-            </div>
+            <div>{t`Merkle root`}</div>
+            <div className="mono">{b.merkle_root}</div>
+          </div>
 
           /* PoW chains */
           , b.bits ? [
@@ -93,29 +97,29 @@ export default ({ t, block: b, blockStatus: status, blockTxs, openTx, spends, op
                 <div>{t`Bits`}</div>
                 <div className="mono">{formatHex(b.bits)}</div>
               </div>
-            , <div>
+              , <div>
                 <div>{t`Difficulty`}</div>
                 <div className="mono">{formatNumber(b.difficulty)}</div>
               </div>
-            , <div>
+              , <div>
                 <div>{t`Nonce`}</div>
                 <div className="mono">{formatHex(b.nonce)}</div>
               </div>
             ]
 
-          /* Federated chains */
-          /* TODO: support for dynafed blocks */
-          : b.ext && b.ext.challenge ? [
-              <div>
-                <div>{t`Block Challenge`}</div>
-                <div className="mono">{b.ext.challenge}</div>
-              </div>
-            , <div>
-                <div>{t`Block Solution`}</div>
-                <div className="mono">{b.ext.solution}</div>
-             </div>
-            ]
-          : null
+            /* Federated chains */
+            /* TODO: support for dynafed blocks */
+            : b.ext && b.ext.challenge ? [
+                <div>
+                  <div>{t`Block Challenge`}</div>
+                  <div className="mono">{b.ext.challenge}</div>
+                </div>
+                , <div>
+                  <div>{t`Block Solution`}</div>
+                  <div className="mono">{b.ext.solution}</div>
+                </div>
+              ]
+              : null
         ] }
 
 
@@ -124,45 +128,45 @@ export default ({ t, block: b, blockStatus: status, blockTxs, openTx, spends, op
       <div className="transactions">
         <h3>{txsShownText(b.tx_count, goBlock.start_index, blockTxs && blockTxs.length, t)}</h3>
         { blockTxs ? blockTxs.map(tx => txBox( { ...tx, status: txsStatus }, { openTx, tipHeight, t, spends }))
-                   : <img src="img/Loading.gif" className="loading-delay" /> }
+          : <img src="img/Loading.gif" className="loading-delay" /> }
       </div>
 
       <div className="load-more-container">
         <div>
           { loading ? <div className="load-more disabled"><span>{t`Load more`}</span><div><img src="img/Loading.gif" /></div></div>
-                    : pagingNav(b, { ...S, t }) }
+            : pagingNav(b, { ...S, t }) }
         </div>
       </div>
     </div>
   </div>
-, { t, page, activeTab: 'recentBlocks', ...S })
+  , { t, page, activeTab: 'recentBlocks', ...S })
 
 const txsShownText = (total, start, shown, t) =>
   (total > perPage && shown > 0)
-  ? t`${ start > 0 ? `${start}-${+start+shown}` : shown} of ${total} Transactions`
-  : t`${total} Transactions`
+    ? t`${ start > 0 ? `${start}-${+start+shown}` : shown} of ${total} Transactions`
+    : t`${total} Transactions`
 
 const pagingNav = (block, { nextBlockTxs, prevBlockTxs, t }) =>
   process.browser
 
-? nextBlockTxs &&
+    ? nextBlockTxs &&
     <div className="load-more" role="button" data-loadmoreTxsIndex={nextBlockTxs} data-loadmoreTxsBlock={block.id}>
       <span>{t`Load more`}</span>
       <div><img alt="" src={`${staticRoot}img/icons/arrow_down.png`} /></div>
     </div>
 
-: [
-    prevBlockTxs != null &&
+    : [
+      prevBlockTxs != null &&
       <a className="load-more" href={`block/${block.id}?start=${prevBlockTxs}`}>
         <div><img alt="" src={`${staticRoot}img/icons/arrow_left_blu.png`} /></div>
         <span>{t`Prev`}</span>
       </a>
-  , nextBlockTxs != null &&
+      , nextBlockTxs != null &&
       <a className="load-more" href={`block/${block.id}?start=${nextBlockTxs}`}>
         <span>{t`Next`}</span>
         <div><img alt="" src={`${staticRoot}img/icons/arrow_right_blu.png`} /></div>
       </a>
-  ]
+    ]
 
 const btnDetails = (blockhash, isOpen, query, t) => process.browser
   // dynamic button in browser env

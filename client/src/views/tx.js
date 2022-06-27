@@ -16,6 +16,12 @@ const OVERPAYMENT_WARN = 1.2
 
 const findSpend = (spends, txid, vout) => spends[txid] && spends[txid][vout]
 
+const getTransactionTitle = (tx) => {
+  if (!tx.status.block_time) return '';
+
+  return `Transaction ${tx.txid} was carried out on the Bitcoin network on ${formatTime(tx.status.block_time)}. `;
+}
+
 export default ({ t, tx, tipHeight, spends, openTx, page, unblinded, ...S }) => {
   if (!tx || !S.txAnalysis) return;
 
@@ -27,27 +33,28 @@ export default ({ t, tx, tipHeight, spends, openTx, page, unblinded, ...S }) => 
   }
 
   return layout(
-  <div>
-    <div className="transaction-page">
-      <div className="container">
-        <div>
-          <h1 className="transaction-header-title">{t`Transaction`}</h1>
-          <div className="block-hash">
-            <span>{tx.txid}</span>
-            { process.browser && <div className="code-button">
-              <div className="code-button-btn" role="button" data-clipboardCopy={tx.txid}></div>
-            </div> }
+    <div>
+      <div className="transaction-page">
+        <div className="container">
+          <div>
+            <h1 className="transaction-header-title">{t`Bitcoin Transaction`}</h1>
+            <p>{getTransactionTitle(tx)}The transaction has {tx.status && <span>{confirmationText(tx.status, tipHeight, t)} {!tx.status.confirmed && isRbf(tx) ? t`(RBF)` : ''}</span>}. Transaction fee was {formatSat(tx.fee)}.</p>
+            <div className="block-hash">
+              <span>{tx.txid}</span>
+              { process.browser && <div className="code-button">
+                <div className="code-button-btn" role="button" data-clipboardCopy={tx.txid}></div>
+              </div> }
+            </div>
           </div>
         </div>
       </div>
+      <div className="container">
+        {txHeader(tx, { t, tipHeight, ...S })}
+        {(unblinded && unblinded.error) ? <div className="text-center text-danger mt-3">{t`Warning:`} {unblinded.error}</div> : <div></div>}
+        {txBox(tx, { openTx, tipHeight, t, spends, query: page.query, ...S })}
+      </div>
     </div>
-    <div className="container">
-      {txHeader(tx, { t, tipHeight, ...S })}
-      {(unblinded && unblinded.error) ? <div className="text-center text-danger mt-3">{t`Warning:`} {unblinded.error}</div> : <div></div>}
-      {txBox(tx, { openTx, tipHeight, t, spends, query: page.query, ...S })}
-    </div>
-  </div>
-  , { t, page, activeTab: 'recentTxs', ...S })
+    , { t, page, activeTab: 'recentTxs', ...S })
 }
 
 const confirmationText = (status, tipHeight, t) =>
@@ -62,6 +69,7 @@ export const txBox = (tx, { t, openTx, tipHeight, spends, query, unblinded, ...S
   return <div className="transaction-box" id="transaction-box">
     <div className="header">
       <div className="txn"><a href={`tx/${tx.txid}`}>{tx.txid}</a></div>
+      <span style={{width: '220px', padding: '0 10px'}}>{tx.status.block_time ? formatTime(tx.status.block_time) : ''}</span>
       {btnDetails(tx.txid, vopt.isOpen, query, t)}
     </div>
     <div className="ins-and-outs">
@@ -85,8 +93,8 @@ export const txBox = (tx, { t, openTx, tipHeight, spends, query, unblinded, ...S
       <div>
         {tx.status && <span>{confirmationText(tx.status, tipHeight, t)} {!tx.status.confirmed && isRbf(tx) ? t`(RBF)` : ''}</span>}
         <span className="amount">{
-              !isAllUnconfidential(tx) ? t`Confidential`
-              : isAllNative(tx)        ? formatSat(outTotal(tx))
+          !isAllUnconfidential(tx) ? t`Confidential`
+            : isAllNative(tx)        ? formatSat(outTotal(tx))
               : ''}</span>
       </div>
     </div>
@@ -106,83 +114,83 @@ const btnDetailsContent = (isOpen, t) =>
   </div>
 
 const txHeader = (tx, { tipHeight, mempool, feeEst, t
-                      , txAnalysis: { feerate, mempoolDepth, confEstimate, overpaying, privacyAnalysis, segwitGains } }) => {
+  , txAnalysis: { feerate, mempoolDepth, confEstimate, overpaying, privacyAnalysis, segwitGains } }) => {
 
   return (
-  <div className="stats-table">
-    <div>
-      <div>{t`Status`}</div>
-      <div>{confirmationText(tx.status, tipHeight, t)}</div>
-    </div>
-    {tx.status.confirmed && [
-     <div>
-        <div>{t`Included in Block`}</div>
-        <div><a href={`block/${tx.status.block_hash}`} className="mono">{tx.status.block_hash}</a></div>
-      </div>
-    , <div>
-        <div>{t`Block height`}</div>
-        <div>{tx.status.block_height}</div>
-      </div>
-    , <div>
-        <div>{t`Block timestamp`}</div>
-        <div>{formatTime(tx.status.block_time)}</div>
-      </div>
-    ]}
-
-    { !tx.status.confirmed && feerate != null && <div>
-      <div>{t`ETA`}</div>
-      <div>{confEstimate == null || mempoolDepth == null ? <span className="text-muted">{t`Loading...`}</span>
-           : confEstimate == -1 ? t`unknown (${formatVMB(mempoolDepth)} from tip)`
-           : t`in ${confEstimate} blocks (${formatVMB(mempoolDepth)} from tip)` }
-      </div>
-    </div> }
-
-    { feerate != null && <div>
-      <div>{t`Transaction fees`}</div>
+    <div className="stats-table">
       <div>
-        <span className="amount">{t`${formatSat(tx.fee)} (${feerate.toFixed(1)} sat/vB)`}</span>
-        { overpaying > OVERPAYMENT_WARN &&
-          <p className={`text-${ overpaying > OVERPAYMENT_WARN*1.5 ? 'danger' : 'warning' } mb-0`} title={t`compared to bitcoind's suggested fee of ${feeEst[2].toFixed(1)} sat/vB for confirmation within 2 blocks`}>
-            ⓘ {t`overpaying by ${Math.round((overpaying-1)*100)}%`}
-          </p>
-        }
+        <div>{t`Status`}</div>
+        <div>{confirmationText(tx.status, tipHeight, t)}</div>
       </div>
-    </div> }
+      {tx.status.confirmed && [
+        <div>
+          <div>{t`Included in Block`}</div>
+          <div><a href={`block/${tx.status.block_hash}`} className="mono">{tx.status.block_hash}</a></div>
+        </div>
+        , <div>
+          <div>{t`Block height`}</div>
+          <div>{tx.status.block_height}</div>
+        </div>
+        , <div>
+          <div>{t`Block timestamp`}</div>
+          <div>{formatTime(tx.status.block_time)}</div>
+        </div>
+      ]}
 
-    <div>
-      <div>{t`Size`}</div>
-      <div>{`${formatNumber(tx.size)} B`}</div>
-    </div>
-    <div>
-      <div>{t`Virtual size`}</div>
-      <div>{`${formatNumber(Math.ceil(tx.weight/4))} vB`}</div>
-    </div>
-    <div>
-      <div>{t`Weight units`}</div>
-      <div>{`${formatNumber(tx.weight)} WU`}</div>
-    </div>
-    <div>
-      <div>{t`Version`}</div>
-      <div>{tx.version}</div>
-    </div>
-    <div>
-      <div>{t`Lock time`}</div>
-      <div>{tx.locktime}</div>
-    </div>
-    { isRbf(tx) && <div>
-      <div>{t`Replace by fee`}</div>
-      <div>{t`Opted in`}</div>
-    </div> }
+      { !tx.status.confirmed && feerate != null && <div>
+        <div>{t`ETA`}</div>
+        <div>{confEstimate == null || mempoolDepth == null ? <span className="text-muted">{t`Loading...`}</span>
+          : confEstimate == -1 ? t`unknown (${formatVMB(mempoolDepth)} from tip)`
+            : t`in ${confEstimate} blocks (${formatVMB(mempoolDepth)} from tip)` }
+        </div>
+      </div> }
 
-    { !!(segwitGains.realizedGains || segwitGains.potentialBech32Gains) && <div>
-      <div>{t`SegWit fee savings`}</div>
-      <div className="py-2 small-sm">{segwitGainsView(segwitGains, t)}</div>
-    </div> }
+      { feerate != null && <div>
+        <div>{t`Transaction fees`}</div>
+        <div>
+          <span className="amount">{t`${formatSat(tx.fee)} (${feerate.toFixed(1)} sat/vB)`}</span>
+          { overpaying > OVERPAYMENT_WARN &&
+            <p className={`text-${ overpaying > OVERPAYMENT_WARN*1.5 ? 'danger' : 'warning' } mb-0`} title={t`compared to bitcoind's suggested fee of ${feeEst[2].toFixed(1)} sat/vB for confirmation within 2 blocks`}>
+              ⓘ {t`overpaying by ${Math.round((overpaying-1)*100)}%`}
+            </p>
+          }
+        </div>
+      </div> }
 
-    <div>
-      <div>{t`Privacy analysis`}</div>
-      <div className="py-2 small-sm">{privacyAnalysisView(privacyAnalysis, t)}</div>
-    </div>
+      <div>
+        <div>{t`Size`}</div>
+        <div>{`${formatNumber(tx.size)} B`}</div>
+      </div>
+      <div>
+        <div>{t`Virtual size`}</div>
+        <div>{`${formatNumber(Math.ceil(tx.weight/4))} vB`}</div>
+      </div>
+      <div>
+        <div>{t`Weight units`}</div>
+        <div>{`${formatNumber(tx.weight)} WU`}</div>
+      </div>
+      <div>
+        <div>{t`Version`}</div>
+        <div>{tx.version}</div>
+      </div>
+      <div>
+        <div>{t`Lock time`}</div>
+        <div>{tx.locktime}</div>
+      </div>
+      { isRbf(tx) && <div>
+        <div>{t`Replace by fee`}</div>
+        <div>{t`Opted in`}</div>
+      </div> }
 
-  </div>)
+      { !!(segwitGains.realizedGains || segwitGains.potentialBech32Gains) && <div>
+        <div>{t`SegWit fee savings`}</div>
+        <div className="py-2 small-sm">{segwitGainsView(segwitGains, t)}</div>
+      </div> }
+
+      <div>
+        <div>{t`Privacy analysis`}</div>
+        <div className="py-2 small-sm">{privacyAnalysisView(privacyAnalysis, t)}</div>
+      </div>
+
+    </div>)
 }

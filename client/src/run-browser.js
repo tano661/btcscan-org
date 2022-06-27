@@ -17,14 +17,38 @@ const apiBase = (process.env.API_URL || '/api').replace(/\/+$/, '')
 
 const titleDriver = title$ => O.from(title$)
   .subscribe(title => {
-    document.title = title ? `${title} | ${initTitle}` : initTitle;
-    document.querySelector('meta[property="og:title"]').setAttribute("content", title ? `${title} | ${initTitle}` : initTitle);
+    document.title = title ? `${title}` : initTitle;
+    document.querySelector('meta[property="og:title"]').setAttribute("content", title ? `${title}` : initTitle);
+    document.querySelector('meta[name="twitter:title"]').setAttribute("content", title ? `${title}` : initTitle);
+    document.querySelector('meta[name="og:title"]').setAttribute("content", title ? `${title}` : initTitle);
   })
 
 const descriptionDriver = description$ => O.from(description$)
   .subscribe(description => {
     if (description) {
       document.querySelector('meta[name="description"]').setAttribute("content", description);
+      document.querySelector('meta[name="twitter:description"]').setAttribute("content", description);
+    }
+  })
+
+const ogTitleDriver = description$ => O.from(description$)
+  .subscribe(description => {
+    if (description) {
+      document.querySelector('meta[property="og:title"]').setAttribute("content", description);
+    }
+  })
+
+const ogDescriptionDriver = description$ => O.from(description$)
+  .subscribe(description => {
+    if (description) {
+      document.querySelector('meta[name="og:description"]').setAttribute("content", description);
+    }
+  })
+
+const ogUrlDriver = description$ => O.from(description$)
+  .subscribe(description => {
+    if (description) {
+      document.querySelector('meta[property="og:url"]').setAttribute("content", description);
     }
   })
 
@@ -40,6 +64,9 @@ run(main, {
   , search: makeSearchDriver(apiBase)
   , title: titleDriver
   , description: descriptionDriver
+  , ogTitle: ogTitleDriver
+  , ogDescription: ogDescriptionDriver
+  , ogUrl: ogUrlDriver
   , scanner: makeScanDriver()
   , blinding: blindingDriver
 })
