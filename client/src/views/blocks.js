@@ -1,69 +1,181 @@
 import Snabbdom from 'snabbdom-pragma'
-import { formatTime, formatNumber } from './util'
+import layout from './layout'
+import { txBox } from './tx'
+import { updateQuery } from '../util'
+import { formatTime, formatHex, formatNumber } from './util'
+import { blockTxsPerPage as perPage } from '../const'
+
 
 const staticRoot = process.env.STATIC_ROOT || ''
 
-export const blks = (blocks, viewMore, loadMore, { t, loading, ...S }) =>
-  <div className="block-container">
-    { !blocks ? <img src="img/Loading.gif" className="loading-delay" />
-      : !blocks.length ? <p>{t`No recent blocks`}</p>
-        : <div className="blocks-table">
-          <p className="table-title">{t`Latest Blocks`}</p>
-          <div className="blocks-table-row header">
-            <div className="blocks-table-cell">{t`Height`}</div>
-            <div className="blocks-table-cell">{process.browser ? t`Timestamp` : t`Timestamp (UTC)`}</div>
-            <div className="blocks-table-cell">{t`Transactions`}</div>
-            <div className="blocks-table-cell">{t`Size (KB)`}</div>
-            <div className="blocks-table-cell">{t`Weight (KWU)`}</div>
+const makeStatus = b => b && ({ confirmed: true, block_height: b.height, block_hash: b.id })
+
+const confirmationText = (status, tipHeight) =>
+  !status.confirmed ? 'It has 0 confirmation' : tipHeight ? `It has ${tipHeight - status.block_height + 1} confirmation${(tipHeight - status.block_height + 1) > 1 ? 's' : ''}` : `confirmed`
+
+export default ({ t, block: b, tx, blockStatus: status, blockTxs, openTx, spends, openBlock, goBlock, tipHeight, loading, page, txsStatus=makeStatus(b), ...S }) => b && layout(
+  <div>
+    <div className="block-page">
+      <div className="container">
+        <div>
+          <h1 className="block-header-title">{t`Block ${b.height}`}</h1>
+          <div className="block-hash"><span>{b.id}</span>
+            { process.browser && <div className="code-button">
+              <div className="code-button-btn" role="button" data-clipboardCopy={b.id}></div>
+            </div> }
           </div>
-          { blocks && blocks.map(b =>
-            <div className="blocks-table-link-row">
-              <a className="blocks-table-row block-data" href={`block/${b.id}`}>
-                <div className="blocks-table-cell highlighted-text" data-label={t`Height`}>{b.height}</div>
-                <div className="blocks-table-cell" data-label={t`Timestamp`}>{formatTime(b.timestamp, false)}</div>
-                <div className="blocks-table-cell" data-label={t`Transactions`}>{formatNumber(b.tx_count)}</div>
-                <div className="blocks-table-cell" data-label={t`Size (KB)`}>{formatNumber(b.size/1000)}</div>
-                <div className="blocks-table-cell" data-label={t`Weight (KWU)`}>{formatNumber(b.weight/1000)}</div>
-              </a>
+          <p>Block was mined on {formatTime(b.timestamp)}. {confirmationText(txsStatus, tipHeight)} on the Bitcoin blockchain. There are {b.tx_count} transactions in block {b.height}.</p>
+          <div className="prev-next-blocks-btns">
+            <div>
+              { b.previousblockhash &&
+                <a href={`block/${b.previousblockhash}`}>
+                  <div>
+                    <div><div className="arrow-prev"></div></div>
+                    <div><span>{t`Previous`}</span></div>
+                  </div>
+                </a>
+              }
             </div>
-          )}
-          {blocks && viewMore ?
-            <a className="view-more" href="blocks/recent">
-              <span>{t`View more blocks`}</span>
-              <div><img alt="" src={`${staticRoot}img/icons/arrow_right_blu.png`} /></div>
-            </a> : ""}
-          {loadMore ?
-            <div className="load-more-container">
-              <div>
-                { loading
-                  ? <div className="load-more disabled"><span>{t`Load more`}</span><div><img src="img/Loading.gif" /></div></div>
-                  : pagingNav({ ...S, t }) }
-              </div>
+            <div>
+              { (status && status.next_best) &&
+                <a href={`block/${status.next_best}`}>
+                  <div>
+                    <div><span>{t`Next`}</span></div>
+                    <div><div className="arrow-next"></div></div>
+                  </div>
+                </a>
+              }
             </div>
-            : "" }
+          </div>
         </div>
-    }
+      </div>
+    </div>
+    <div className="container">
+      {btnDetails(b.id, openBlock == b.id, page.query, t)}
+
+      <div className="stats-table">
+        <div>
+          <div>{t`Height`}</div>
+          <div><a href={`block/${b.id}`}>{b.height}</a></div>
+        </div>
+        <div>
+          <div>{t`Status`}</div>
+          <div>{!status ? '' : !status.in_best_chain ? t`Orphaned` : tipHeight ? t`In best chain (${tipHeight-b.height+1} confirmations)` : t`In best chain`}</div>
+        </div>
+        <div>
+          <div>{t`Timestamp`}</div>
+          <div>{formatTime(b.timestamp)}</div>
+        </div>
+        <div>
+          <div>{t`Size`}</div>
+          <div>{`${formatNumber(b.size/1000)} KB`}</div>
+        </div>
+        <div>
+          <div>{t`Virtual size`}</div>
+          <div>{`${Math.ceil(b.weight/4/1000)} vKB`}</div>
+        </div>
+        <div>
+          <div>{t`Weight units`}</div>
+          <div>{`${formatNumber(b.weight/1000)} KWU`}</div>
+        </div>
+
+        { /* advanced details */ }
+        { openBlock == b.id && [
+
+          <div>
+            <div>{t`Version`}</div>
+            <div className="mono">{formatHex(b.version)}</div>
+          </div>
+          , <div>
+            <div>{t`Merkle root`}</div>
+            <div className="mono">{b.merkle_root}</div>
+          </div>
+
+          /* PoW chains */
+          , b.bits ? [
+              <div>
+                <div>{t`Bits`}</div>
+                <div className="mono">{formatHex(b.bits)}</div>
+              </div>
+              , <div>
+                <div>{t`Difficulty`}</div>
+                <div className="mono">{formatNumber(b.difficulty)}</div>
+              </div>
+              , <div>
+                <div>{t`Nonce`}</div>
+                <div className="mono">{formatHex(b.nonce)}</div>
+              </div>
+            ]
+
+            /* Federated chains */
+            /* TODO: support for dynafed blocks */
+            : b.ext && b.ext.challenge ? [
+                <div>
+                  <div>{t`Block Challenge`}</div>
+                  <div className="mono">{b.ext.challenge}</div>
+                </div>
+                , <div>
+                  <div>{t`Block Solution`}</div>
+                  <div className="mono">{b.ext.solution}</div>
+                </div>
+              ]
+              : null
+        ] }
+
+
+      </div>
+
+      <div className="transactions">
+        <h3>{txsShownText(b.tx_count, goBlock.start_index, blockTxs && blockTxs.length, t)}</h3>
+        { blockTxs ? blockTxs.map(tx => txBox( { ...tx, status: txsStatus }, { openTx, tipHeight, t, spends }))
+          : <img src="img/Loading.gif" className="loading-delay" /> }
+      </div>
+
+      <div className="load-more-container">
+        <div>
+          { loading ? <div className="load-more disabled"><span>{t`Load more`}</span><div><img src="img/Loading.gif" /></div></div>
+            : pagingNav(b, { ...S, t }) }
+        </div>
+      </div>
+    </div>
   </div>
+  , { t, page, activeTab: 'recentBlocks', ...S })
 
+const txsShownText = (total, start, shown, t) =>
+  (total > perPage && shown > 0)
+    ? t`${ start > 0 ? `${start}-${+start+shown}` : shown} of ${total} Transactions`
+    : t`${total} Transactions`
 
-const pagingNav = ({ nextBlocks, prevBlocks, t }) =>
+const pagingNav = (block, { nextBlockTxs, prevBlockTxs, t }) =>
   process.browser
 
-    ? nextBlocks != null &&
-    <div className="load-more" role="button" data-loadmoreBlockHeight={''+nextBlocks}>
+    ? nextBlockTxs &&
+    <div className="load-more" role="button" data-loadmoreTxsIndex={nextBlockTxs} data-loadmoreTxsBlock={block.id}>
       <span>{t`Load more`}</span>
       <div><img alt="" src={`${staticRoot}img/icons/arrow_down.png`} /></div>
     </div>
 
     : [
-      prevBlocks != null &&
-      <a className="load-more" href={`blocks/recent/?start=${prevBlocks}`}>
+      prevBlockTxs != null &&
+      <a className="load-more" href={`block/${block.id}?start=${prevBlockTxs}`}>
         <div><img alt="" src={`${staticRoot}img/icons/arrow_left_blu.png`} /></div>
-        <span>{t`Newer`}</span>
+        <span>{t`Prev`}</span>
       </a>
-      , nextBlocks != null &&
-      <a className="load-more" href={`blocks/recent/?start=${nextBlocks}`}>
-        <span>{t`Older`}</span>
+      , nextBlockTxs != null &&
+      <a className="load-more" href={`block/${block.id}?start=${nextBlockTxs}`}>
+        <span>{t`Next`}</span>
         <div><img alt="" src={`${staticRoot}img/icons/arrow_right_blu.png`} /></div>
       </a>
     ]
+
+const btnDetails = (blockhash, isOpen, query, t) => process.browser
+  // dynamic button in browser env
+  ? <div className="details-btn float-right mb-2" data-toggleBlock={blockhash}>{btnDetailsContent(isOpen, t)}</div>
+  // or a plain link in server-side rendered env
+  :  <a className="details-btn float-right mb-2" href={`block/${blockhash}${updateQuery(query, { expand: !isOpen })}`}>{btnDetailsContent(isOpen, t)}</a>
+
+const btnDetailsContent = (isOpen, t) =>
+  <div role="button" tabindex="0">
+    <div>{t`Details`}</div>
+    <div className={isOpen?'minus':'plus'}></div>
+  </div>

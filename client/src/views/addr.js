@@ -8,25 +8,12 @@ import { addrTxsPerPage as perPage, maxMempoolTxs } from '../const'
 
 const staticRoot = process.env.STATIC_ROOT || ''
 
-const getTransactionDate = (txs, reversed = false) => {
+const getTransactionDate = (txs) => {
   const unknownStatus = '';
 
   if (!txs || txs.length === 0) return unknownStatus;
 
-  let foundConfirmedTx = null;
-
-  if (reversed) {
-    foundConfirmedTx = txs.find(item => item.status.confirmed)
-  } else {
-    for (let i=txs.length-1; i<txs.length; i--) {
-      const item = txs[i];
-
-      if (item.status.confirmed) {
-        foundConfirmedTx = item;
-        break;
-      }
-    }
-  }
+  const foundConfirmedTx = txs.find(item => item.status.confirmed)
 
   if (!foundConfirmedTx) return unknownStatus;
 
@@ -74,7 +61,7 @@ export default ({ t, addr, addrQR, addrTxs, goAddr, openTx, spends, tipHeight, l
                   <div className="code-button-btn" role="button" data-clipboardCopy={display_addr}></div>
                 </div> }
               </div>
-              <p>Address {display_addr} has {total_txs} transaction on the Bitcoin blockchain{addrTxs ? ` since ${getTransactionDate(addrTxs)}` : ''}.  It has received a total of {chain_stats.funded_txo_sum > 0 ? `${formatSat(chain_stats.funded_txo_sum)}` : ''} and has sent a total of {chain_stats.spent_txo_sum > 0 ? `${formatSat(chain_stats.spent_txo_sum)}` : ''}. The current balance of this address is confirmed {chain_stats.funded_txo_sum - chain_stats.spent_txo_sum > 0 ? `${formatSat(chain_stats.funded_txo_sum - chain_stats.spent_txo_sum)}` : '0 BTC'}.</p>
+              <p>Address {display_addr} has {total_txs} transaction{total_txs > 1 ? 's' : ''} on the Bitcoin blockchain.{addrTxs && getTransactionDate(addrTxs)  ? ` Last balance change was ${getTransactionDate(addrTxs)}.` : ''} It has received a total of {chain_stats.funded_txo_sum > 0 ? `${formatSat(chain_stats.funded_txo_sum)}` : formatSat(0)} and has sent a total of {chain_stats.spent_txo_sum > 0 ? `${formatSat(chain_stats.spent_txo_sum)}` : formatSat(0)}. The current balance of this address is {chain_stats.funded_txo_sum - chain_stats.spent_txo_sum > 0 ? `${formatSat(chain_stats.funded_txo_sum - chain_stats.spent_txo_sum)}` : formatSat(0)}.</p>
             </div>
             {show_qr && <div className="col-sm-4">
               <img className="float-sm-right address-qr-code" src={ addrQR } />
@@ -118,12 +105,8 @@ export default ({ t, addr, addrQR, addrTxs, goAddr, openTx, spends, tipHeight, l
           </div> }
 
           { chain_stats.tx_count > 0 && <div>
-            <div>{t`First Balance Change`}</div>
-            <div>{getTransactionDate(addrTxs)}</div>
-          </div> }
-          { chain_stats.tx_count > 0 && <div>
             <div>{t`Last Balance Change`}</div>
-            <div>{getTransactionDate(addrTxs, true)}</div>
+            <div>{getTransactionDate(addrTxs)}</div>
           </div> }
 
           { mempool_stats.tx_count > 0 && <div>
