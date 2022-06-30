@@ -11,7 +11,7 @@ const staticRoot = process.env.STATIC_ROOT || ''
 const makeStatus = b => b && ({ confirmed: true, block_height: b.height, block_hash: b.id })
 
 const confirmationText = (status, tipHeight) =>
-  !status.confirmed ? 'It has 0 confirmations' : tipHeight ? `It has ${tipHeight - status.block_height + 1} confirmations` : `confirmed`
+  !status.confirmed ? 'It has 0 confirmation' : tipHeight ? `It has ${tipHeight - status.block_height + 1} confirmation${(tipHeight - status.block_height + 1) > 1 ? 's' : ''}` : `confirmed`
 
 export default ({ t, block: b, tx, blockStatus: status, blockTxs, openTx, spends, openBlock, goBlock, tipHeight, loading, page, txsStatus=makeStatus(b), ...S }) => b && layout(
   <div>
@@ -19,12 +19,12 @@ export default ({ t, block: b, tx, blockStatus: status, blockTxs, openTx, spends
       <div className="container">
         <div>
           <h1 className="block-header-title">{t`Block ${b.height}`}</h1>
-          <p>Block was mined on {formatTime(b.timestamp)}. {confirmationText(txsStatus, tipHeight)} on the Bitcoin blockchain. There are {b.tx_count} transactions in block {b.height}.</p>
           <div className="block-hash"><span>{b.id}</span>
             { process.browser && <div className="code-button">
               <div className="code-button-btn" role="button" data-clipboardCopy={b.id}></div>
             </div> }
           </div>
+          <p>Block was mined on {formatTime(b.timestamp)}. {confirmationText(txsStatus, tipHeight)} on the Bitcoin blockchain. There are {b.tx_count} transactions in block {b.height}.</p>
           <div className="prev-next-blocks-btns">
             <div>
               { b.previousblockhash &&
