@@ -38,13 +38,13 @@ export default ({ t, tx, tipHeight, spends, openTx, page, unblinded, ...S }) => 
         <div className="container">
           <div>
             <h1 className="transaction-header-title">{t`Bitcoin Transaction`}</h1>
-            <p>{getTransactionTitle(tx)}The transaction has {tx.status && <span>{confirmationText(tx.status, tipHeight, t)} {!tx.status.confirmed && isRbf(tx) ? t`(RBF)` : ''}</span>}. Transaction fee was {formatSat(tx.fee)}.</p>
             <div className="block-hash">
               <span>{tx.txid}</span>
               { process.browser && <div className="code-button">
                 <div className="code-button-btn" role="button" data-clipboardCopy={tx.txid}></div>
               </div> }
             </div>
+            <p>{getTransactionTitle(tx)} {tx.status && <span>{confirmationCustomText(tx.status, tipHeight, t)} {!tx.status.confirmed && isRbf(tx) ? t`(RBF)` : ''}</span>} Transaction fee was {formatSat(tx.fee)}.</p>
           </div>
         </div>
       </div>
@@ -57,8 +57,11 @@ export default ({ t, tx, tipHeight, spends, openTx, page, unblinded, ...S }) => 
     , { t, page, activeTab: 'recentTxs', ...S })
 }
 
+const confirmationCustomText = (status, tipHeight, t) =>
+  !status.confirmed ? t`The transaction is currently unconfirmed by the network.` : tipHeight ? t`The transaction has ${tipHeight - status.block_height + 1} confirmation${(tipHeight - status.block_height + 1) > 1 ? 's' : ''}.` : t`The transaction has confirmed.`
+
 const confirmationText = (status, tipHeight, t) =>
-  !status.confirmed ? t`Unconfirmed` : tipHeight ? t`${tipHeight - status.block_height + 1} Confirmations` : t`Confirmed`
+  !status.confirmed ? t`unconfirmed` : tipHeight ? t`${tipHeight - status.block_height + 1} confirmations` : t`confirmed`
 
 export const txBox = (tx, { t, openTx, tipHeight, spends, query, unblinded, ...S }) => {
   const vopt = { isOpen: (openTx == tx.txid), query, t, ...S }
