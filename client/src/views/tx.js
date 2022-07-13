@@ -58,7 +58,7 @@ export default ({ t, tx, tipHeight, spends, openTx, page, unblinded, ...S }) => 
 }
 
 const confirmationCustomText = (status, tipHeight, t) =>
-  !status.confirmed ? t`The transaction is currently unconfirmed by the network.` : tipHeight ? t`The transaction has ${tipHeight - status.block_height + 1} confirmation${(tipHeight - status.block_height + 1) > 1 ? 's' : ''}.` : t`The transaction has confirmed.`
+  !status.confirmed ? t`The transaction is currently unconfirmed by the network.` : tipHeight ? t`The transaction has ${tipHeight - status.block_height + 1} confirmation${(tipHeight - status.block_height + 1) === 1 ? '' : 's'}.` : t`The transaction has confirmed.`
 
 const confirmationText = (status, tipHeight, t) =>
   !status.confirmed ? t`unconfirmed` : tipHeight ? t`${tipHeight - status.block_height + 1} confirmations` : t`confirmed`
