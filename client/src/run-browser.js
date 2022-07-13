@@ -19,8 +19,6 @@ const titleDriver = title$ => O.from(title$)
   .subscribe(title => {
     document.title = title ? `${title}` : initTitle;
     document.querySelector('meta[property="og:title"]').setAttribute("content", title ? `${title}` : initTitle);
-    document.querySelector('meta[name="twitter:title"]').setAttribute("content", title ? `${title}` : initTitle);
-    document.querySelector('meta[name="og:title"]').setAttribute("content", title ? `${title}` : initTitle);
   })
 
 const descriptionDriver = description$ => O.from(description$)
@@ -34,7 +32,8 @@ const descriptionDriver = description$ => O.from(description$)
 const ogTitleDriver = description$ => O.from(description$)
   .subscribe(description => {
     if (description) {
-      document.querySelector('meta[property="og:title"]').setAttribute("content", description);
+      document.querySelector('meta[name="og:title"]').setAttribute("content", description);
+      document.querySelector('meta[name="twitter:title"]').setAttribute("content", description);
     }
   })
 
