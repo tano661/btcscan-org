@@ -261,33 +261,44 @@ export default function main({ DOM, HTTP, route, storage, scanner: scan$, search
       , addr$.filter(notNully).withLatestFrom(goAddr$, t$, (_, goAddr, t) => t`Bitcoin Address ${goAddr.display_addr} | BTCScan`)
       , asset$.filter(notNully).withLatestFrom(t$, (asset, t) => t`Asset: ${asset.asset_id}`)
       , goAssetList$.withLatestFrom(t$, (_, t) => t`Registered assets`)
-      , goPush$.withLatestFrom(t$, (_, t) => t`Broadcast transaction`)
+      , goPush$.withLatestFrom(t$, (_, t) => t`Broadcast Raw Transaction | BTCscan`)
       , goMempool$.withLatestFrom(t$, (_, t) => t`Mempool`)
-      , goRecent$.withLatestFrom(t$, (_, t) => t`Bitcoin Transactions | BTCScan`))
+      , goRecent$.withLatestFrom(t$, (_, t) => t`Bitcoin Blockchain Explorer - Recent Transactions | BTCScan`))
 
-    , description$ = O.merge(page$.withLatestFrom(t$, (_, t) => t`Btcscan's Bitcoin block explorer provides real-time blockchain data. With the BTC block explorer, you can search blocks, addresses, and transactions on the Bitcoin blockchain`)
+    , description$ = O.merge(page$.withLatestFrom(t$, (_, t) => t`Real-time blockchain data. With the BTC block explorer, you can search blocks, addresses, and transactions on the Bitcoin blockchain`)
       , goBlocks$.withLatestFrom(t$, (_, t) => t`Btcscan’s Bitcoin blockchain explorer helps make sense of past and real-time network data. Search BTC explorer for information on blocks, transactions, and addresses`)
-      , goRecent$.withLatestFrom(t$, (_, t) => t`Check bitcoin transactions using Btcscan. Btcscan is a tool for tracking BTC transactions. ID of the transaction, bitcoin value, size, and fee can all be found using the bitcoin block explorer`)
+      , goRecent$.withLatestFrom(t$, (_, t) => t`Check recent bitcoin transactions using Btcscan, a tool for tracking BTC transactions. Find ID transaction, bitcoin value, size, and fees.`)
+      , goPush$.withLatestFrom(t$, (_, t) => t`Consult broadcast raw transactions with the BTC block explorer powered by BTCscan - Redot. Find ID transaction, bitcoin value, size, and fees.`)
       , block$.filter(notNully).withLatestFrom(t$, (block, t) => t`Bitcoin (BTC) block ${block.height}, hash: ${block.id}`)
       , tx$.filter(notNully).withLatestFrom(t$, (tx, t) => t`Check Bitcoin (BTC) transaction ${tx.txid} ${tx.status.block_time ? `from ${formatTime(tx.status.block_time)}` : ''}` )
       , addr$.filter(notNully).withLatestFrom(goAddr$, t$, (_, goAddr, t) => t`Check Bitcoin (BTC) Address ${goAddr.display_addr} current balance and its transactions history`))
 
-    , ogTitle$ = O.merge(page$.withLatestFrom(t$, (_, t) => t`Btcscan - Bitcoin Blockchain Explorer | BTC Search Engine`)
+    , ogTitle$ = O.merge(page$.withLatestFrom(t$, (_, t) => t`Bitcoin Blockchain Explorer | BTCScan`)
       , goBlocks$.withLatestFrom(t$, (_, t) => t`Btcscan - Bitcoin Blockchain Explorer | BTC Search Engine`)
-      , goRecent$.withLatestFrom(t$, (_, t) => t`Btcscan - Bitcoin Blockchain Explorer | BTC Search Engine`)
+      , goRecent$.withLatestFrom(t$, (_, t) => t`Bitcoin Blockchain Explorer - Recent Transactions | BTCScan`)
       , block$.filter(notNully).withLatestFrom(t$, (block, t) => t`Bitcoin block ${block.height} | BTCScan`)
       , tx$.filter(notNully).withLatestFrom(t$, (tx, t) => t`Bitcoin Transaction ${tx.txid} | BTCScan` )
+      , goPush$.withLatestFrom(t$, (_, t) => t`Broadcast Raw Transaction | BTCscan`)
       , addr$.filter(notNully).withLatestFrom(goAddr$, t$, (_, goAddr, t) => t`Bitcoin Address ${goAddr.display_addr} | BTCScan`))
 
-    , ogDescription$ = O.merge(page$.withLatestFrom(t$, (_, t) => t`Btcscan's Bitcoin block explorer provides real-time blockchain data. With the BTC block explorer, you can search blocks, addresses, and transactions on the Bitcoin blockchain`)
+    , ogDescription$ = O.merge(page$.withLatestFrom(t$, (_, t) => t`Real-time blockchain data. With the BTC block explorer, you can search blocks, addresses, and transactions on the Bitcoin blockchain`)
       , goBlocks$.withLatestFrom(t$, (_, t) => t`Btcscan’s Bitcoin blockchain explorer helps make sense of past and real-time network data. Search BTC explorer for information on blocks, transactions, and addresses`)
-      , goRecent$.withLatestFrom(t$, (_, t) => t`Check bitcoin transactions using Btcscan. Btcscan is a tool for tracking BTC transactions. ID of the transaction, bitcoin value, size, and fee can all be found using the bitcoin block explorer`)
+      , goRecent$.withLatestFrom(t$, (_, t) => t`Check recent bitcoin transactions using Btcscan, a tool for tracking BTC transactions. Find ID transaction, bitcoin value, size, and fees.`)
+      , goPush$.withLatestFrom(t$, (_, t) => t`Consult broadcast raw transactions with the BTC block explorer powered by BTCscan - Redot. Find ID transaction, bitcoin value, size, and fees.`)
       , block$.filter(notNully).withLatestFrom(t$, (block, t) => t`Bitcoin (BTC) block ${block.height}, hash: ${block.id}`)
       , tx$.filter(notNully).withLatestFrom(t$, (tx, t) => t`Check Bitcoin (BTC) transaction ${tx.txid} ${tx.status.block_time ? `from ${formatTime(tx.status.block_time)}` : ''}` )
       , addr$.filter(notNully).withLatestFrom(goAddr$, t$, (_, goAddr, t) => t`Check Bitcoin (BTC) Address ${goAddr.display_addr} current balance and its transactions history`))
 
     , ogUrl$ = O.merge(page$.withLatestFrom(t$, (_, t) => t`https://btcscan.org`)
       , goBlocks$.withLatestFrom(t$, (_, t) => t`https://btcscan.org/blocks/recent`)
+      , goRecent$.withLatestFrom(t$, (_, t) => t`https://btcscan.org/tx/recent`)
+      , block$.filter(notNully).withLatestFrom(t$, (block, t) => t`https://btcscan.org/block/${block.id}`)
+      , tx$.filter(notNully).withLatestFrom(t$, (tx, t) => t`https://btcscan.org/tx/${tx.txid}`)
+      , addr$.filter(notNully).withLatestFrom(goAddr$, t$, (_, goAddr, t) => t`https://btcscan.org/address/${goAddr.addr}`))
+
+    , canLink$ = O.merge(page$.withLatestFrom(t$, () => 'https://btcscan.org')
+      , goBlocks$.withLatestFrom(t$, (_, t) => t`https://btcscan.org/blocks/recent`)
+      , goPush$.withLatestFrom(t$, (_, t) => t`https://btcscan.org/tx/push`)
       , goRecent$.withLatestFrom(t$, (_, t) => t`https://btcscan.org/tx/recent`)
       , block$.filter(notNully).withLatestFrom(t$, (block, t) => t`https://btcscan.org/block/${block.id}`)
       , tx$.filter(notNully).withLatestFrom(t$, (tx, t) => t`https://btcscan.org/tx/${tx.txid}`)
@@ -488,6 +499,7 @@ export default function main({ DOM, HTTP, route, storage, scanner: scan$, search
     , ogTitle: ogTitle$
     , ogDescription: ogDescription$
     , ogUrl: ogUrl$
+    , canLink: canLink$
     , state: state$
 
     // elements only
