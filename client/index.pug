@@ -23,9 +23,6 @@ head
   meta(name='twitter:description' content='The most trusted and popular bitcoin (BTC) blockchain explorer and crypto transaction search')
   meta(name='twitter:title' content='Bitcoin Blockchain Explorer: find any bitcoin transaction | BTCScan')
 
-  if canon_url
-    link(rel="canonical", href=canon_url)
-
   if !noscript && process.env.NOSCRIPT_REDIR
     noscript: meta(http-equiv='refresh', content="0; url='?nojs'")
 

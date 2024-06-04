@@ -51,6 +51,25 @@ const ogUrlDriver = description$ => O.from(description$)
     }
   })
 
+const canLinkDriver = description$ => O.from(description$)
+  .subscribe(description => {
+    const element = document.querySelector('link[rel="canonical"]');
+    console.log('here', description);
+
+    if (description && description !== 'none') {
+      if (!element) {
+        const elementToAdd = document.createElement('link');
+        elementToAdd.rel = 'canonical';
+        elementToAdd.setAttribute("href", description)
+        document.head.appendChild(elementToAdd);
+      } else {
+        element.setAttribute("href", description);
+      }
+    } else {
+      element.remove()
+    }
+  })
+
 const blindingDriver = process.env.IS_ELEMENTS
   ? require('./driver/blinding')
   : _ => O.empty()
@@ -66,6 +85,7 @@ run(main, {
   , ogTitle: ogTitleDriver
   , ogDescription: ogDescriptionDriver
   , ogUrl: ogUrlDriver
+  , canLink: canLinkDriver
   , scanner: makeScanDriver()
   , blinding: blindingDriver
 })
