@@ -25,8 +25,8 @@ export default (t, theme, page) =>
         <div className="wallets-link">
             <p>Redot</p>
             <div>
-              <a href="https://play.google.com/store/apps/details?id=com.redot.app" target="_blank"><img alt="google play" src={`${staticRoot}img/icons/google-play.png`} /><span>Google Play</span></a>
-              <a href="https://redot.com/" alt="web" target="_blank"><img src={`${staticRoot}img/icons/web.png`} /><span>Web</span></a>
+              <a href="https://play.google.com/store/apps/details?id=com.redot.app" target="_blank"><img src={`${staticRoot}img/icons/google-play.png`} alt="google play"/><span>Google Play</span></a>
+              <a href="https://redot.com/" target="_blank"><img src={`${staticRoot}img/icons/web.png`} alt="web"/><span>Web</span></a>
             </div>
         </div>
       </div>

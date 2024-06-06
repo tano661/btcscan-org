@@ -16,7 +16,7 @@ export default ({ t, klass, autofocus }) =>
         required
         autocomplete="off"
       />
-      { hasCam ? <a className="qrcode-link" href="scan-qr"><img alt="arcade" src={`${staticRoot}img/icons/qrcode.svg`}/></a>: "" }
+      { hasCam ? <a className="qrcode-link" href="scan-qr"><img src={`${staticRoot}img/icons/qrcode.svg`} alt="arcade"/></a>: "" }
       <button className="search-bar-submit" type="image"></button>
     </div>
   </form>
