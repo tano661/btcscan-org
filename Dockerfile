@@ -69,4 +69,7 @@ RUN apt-get --auto-remove remove -yqq --purge manpages \
  && apt-get autoclean \
  && rm -rf /usr/share/doc* /usr/share/man /usr/share/postgresql/*/man /var/lib/apt/lists/* /var/cache/* /tmp/* /root/.cache /*.deb /root/.cargo
 
+# bind bitcoind RPC port 8332 to all IP addresses
+RUN printf "txindex=1\nrpcallowip=0.0.0.0/0\nrpcbind=0.0.0.0\nrpcbind=127.0.0.1\n" >> /srv/explorer/source/contrib/bitcoin-mainnet-explorer.conf.in
+
 WORKDIR /srv/explorer
