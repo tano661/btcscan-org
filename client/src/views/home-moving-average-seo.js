@@ -37,7 +37,7 @@ export const dashBoardMovingAverageSeo = ({ t, blocks, dashboardState, loading, 
           </div>
         </div>
         {transactions( dashTxs, true, { t } )}
-        <div className="block-container block-container--info">
+        <div className="block-container block-container--info block-container--info-accent">
           <div className="blocks-table">
             <h2>Historical Performance of Bitcoin and the 200-Week MA</h2>
             <p>A look at Bitcoin’s past performance shows just how often the 200-week moving average acts as a bounce zone. In the 2015, 2018, and 2022 bear markets, price respected or slightly dipped below the line before reversing course. These rebounds suggest the 200-week MA represents not only technical support, but also a point of renewed investor confidence. It has become a touchstone level during capitulation phases—often aligning with low RSI readings and peak fear in the market.</p>
@@ -56,7 +56,7 @@ export const dashBoardMovingAverageSeo = ({ t, blocks, dashboardState, loading, 
           </div>
         </div>
         <div>
-          <h3><b>FAQs About Bitcoin Testnet</b></h3>
+          <h3><b>Frequently Asked Questions</b></h3>
 
           <div className="question-section">
             <p><b>Why is the 200-week MA significant in Bitcoin analysis?</b></p>
