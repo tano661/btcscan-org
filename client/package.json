@@ -4,7 +4,7 @@
   "author": "Nadav Ivgi",
   "license": "MIT",
   "scripts": {
-    "postinstall": "../node_modules/.bin/patch-package",
+    "bitcoin-mainnet": "../node_modules/.bin/patch-package",
     "dist": "../node_modules/.bin/babel -d dist src"
   },
   "dependencies": {
